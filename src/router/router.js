@@ -13,6 +13,7 @@ const SetUserName = res => require(['@/components/user/children/children/setuser
 const Address = res => require(['@/components/user/children/children/address'], res)
 const Add = res => require(['@/components/user/children/children/children/add'], res)
 const AddDetail = res => require(['@/components/user/children/children/children/children/addDetail'], res)
+const Banlance = res => require(['@/components/banlance/banlance'], res)
 Vue.use(Router)
 
 export default new Router({
@@ -25,6 +26,7 @@ export default new Router({
         {path: '/food', component: Food},
         {path: '/shop', component: Shop},
         {path: '/search', component: Search},
+        {path: '/banlance', component: Banlance},
         {path: '/user', component: User},
         {path: '/user/info', component: Info},
         {path: '/user/info/setusername', component: SetUserName},
