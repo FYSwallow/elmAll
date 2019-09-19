@@ -1,12 +1,12 @@
 <template>
     <div>
         <ul class="shop_list">
-            <li class="shop_list_item">
-                <img src="@/assets/nav.jpg" alt="">
+            <li class="shop_list_item" v-for="(item, index) in shopListArr" :key="index">
+                <img :src="imgBaseUrl + item.image_path">
                 <section>
                     <header class="shop_detail">
                         <div class="shop_detail_left">
-                            <h4 class="shop_title">品牌</h4>
+                            <h4 class="shop_title">{{item.name}}</h4>
                         </div>
                         <div class="shop_detail_right">
                             <span>保</span>
@@ -20,173 +20,21 @@
                                 <div class="rating_star_white">★★★★★</div>
                                 <div class="rating_star_orange">★★★★★</div>
                             </div>
-                            <div class="rating_score">4.7</div>
-                            <div class="seller_num">月售106单</div>
+                            <div class="rating_score">{{item.rating}}</div>
+                            <div class="seller_num">月售{{item.recent_order_num}}单</div>
                         </div>
                         <div class="rating_right">
-                            <span>蜂鸟专送</span>
+                            <span v-if="item.delivery_mode">{{item.delivery_mode.text}}</span>
                             <span>准时达</span>
                         </div>
                     </div>
                     <div class="distance">
                         <div class="distance_left">
-                            ￥20元起送 / 配送费约￥5
+                            ¥{{item.float_minimum_order_amount}}起送 / 
                         </div>
                         <div class="distance_right">
-                            <span>1576.7公里&nbsp;</span>/
-                            <span>18小时46分钟</span>
-                        </div>
-                    </div>
-                </section>
-            </li>
-            <li class="shop_list_item">
-                <img src="@/assets/nav.jpg" alt="">
-                <section>
-                    <header class="shop_detail">
-                        <div class="shop_detail_left">
-                            <h4 class="shop_title">品牌</h4>
-                        </div>
-                        <div class="shop_detail_right">
-                            <span>保</span>
-                            <span>准</span>
-                            <span>票</span>
-                        </div>
-                    </header>
-                    <div class="rating">
-                        <div class="rating_left">
-                            <div class="rating_star">
-                                <div class="rating_star_white">★★★★★</div>
-                                <div class="rating_star_orange">★★★★★</div>
-                            </div>
-                            <div class="rating_score">4.7</div>
-                            <div class="seller_num">月售106单</div>
-                        </div>
-                        <div class="rating_right">
-                            <span>蜂鸟专送</span>
-                            <span>准时达</span>
-                        </div>
-                    </div>
-                    <div class="distance">
-                        <div class="distance_left">
-                            ￥20元起送 / 配送费约￥5
-                        </div>
-                        <div class="distance_right">
-                            <span>1576.7公里&nbsp;</span>/
-                            <span>18小时46分钟</span>
-                        </div>
-                    </div>
-                </section>
-            </li>
-            <li class="shop_list_item">
-                <img src="@/assets/nav.jpg" alt="">
-                <section>
-                    <header class="shop_detail">
-                        <div class="shop_detail_left">
-                            <h4 class="shop_title">品牌</h4>
-                        </div>
-                        <div class="shop_detail_right">
-                            <span>保</span>
-                            <span>准</span>
-                            <span>票</span>
-                        </div>
-                    </header>
-                    <div class="rating">
-                        <div class="rating_left">
-                            <div class="rating_star">
-                                <div class="rating_star_white">★★★★★</div>
-                                <div class="rating_star_orange">★★★★★</div>
-                            </div>
-                            <div class="rating_score">4.7</div>
-                            <div class="seller_num">月售106单</div>
-                        </div>
-                        <div class="rating_right">
-                            <span>蜂鸟专送</span>
-                            <span>准时达</span>
-                        </div>
-                    </div>
-                    <div class="distance">
-                        <div class="distance_left">
-                            ￥20元起送 / 配送费约￥5
-                        </div>
-                        <div class="distance_right">
-                            <span>1576.7公里&nbsp;</span>/
-                            <span>18小时46分钟</span>
-                        </div>
-                    </div>
-                </section>
-            </li>
-            <li class="shop_list_item">
-                <img src="@/assets/nav.jpg" alt="">
-                <section>
-                    <header class="shop_detail">
-                        <div class="shop_detail_left">
-                            <h4 class="shop_title">品牌</h4>
-                        </div>
-                        <div class="shop_detail_right">
-                            <span>保</span>
-                            <span>准</span>
-                            <span>票</span>
-                        </div>
-                    </header>
-                    <div class="rating">
-                        <div class="rating_left">
-                            <div class="rating_star">
-                                <div class="rating_star_white">★★★★★</div>
-                                <div class="rating_star_orange">★★★★★</div>
-                            </div>
-                            <div class="rating_score">4.7</div>
-                            <div class="seller_num">月售106单</div>
-                        </div>
-                        <div class="rating_right">
-                            <span>蜂鸟专送</span>
-                            <span>准时达</span>
-                        </div>
-                    </div>
-                    <div class="distance">
-                        <div class="distance_left">
-                            ￥20元起送 / 配送费约￥5
-                        </div>
-                        <div class="distance_right">
-                            <span>1576.7公里&nbsp;</span>/
-                            <span>18小时46分钟</span>
-                        </div>
-                    </div>
-                </section>
-            </li>
-            <li class="shop_list_item">
-                <img src="@/assets/nav.jpg" alt="">
-                <section>
-                    <header class="shop_detail">
-                        <div class="shop_detail_left">
-                            <h4 class="shop_title">品牌</h4>
-                        </div>
-                        <div class="shop_detail_right">
-                            <span>保</span>
-                            <span>准</span>
-                            <span>票</span>
-                        </div>
-                    </header>
-                    <div class="rating">
-                        <div class="rating_left">
-                            <div class="rating_star">
-                                <div class="rating_star_white">★★★★★</div>
-                                <div class="rating_star_orange">★★★★★</div>
-                            </div>
-                            <div class="rating_score">4.7</div>
-                            <div class="seller_num">月售106单</div>
-                        </div>
-                        <div class="rating_right">
-                            <span>蜂鸟专送</span>
-                            <span>准时达</span>
-                        </div>
-                    </div>
-                    <div class="distance">
-                        <div class="distance_left">
-                            ￥20元起送 / 配送费约￥5
-                        </div>
-                        <div class="distance_right">
-                            <span>1576.7公里&nbsp;</span>/
-                            <span>18小时46分钟</span>
+                            <span>{{item.distance}}</span>/
+                            <span>{{item.order_lead_time}}</span>
                         </div>
                     </div>
                 </section>
@@ -196,8 +44,34 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
+import {shopList} from '@/api/index'
 export default {
-    
+    props: ['geohash'],
+    data() {
+        return {
+            offset: 0, // 批次加载店铺列表，每次加载20个 limit = 20
+            shopListArr:[], // 店铺列表数据
+            imgBaseUrl: '//elm.cangdu.org/img/' //
+        }
+    },
+    created() {
+        this.initData()
+    },
+    computed: {
+        ...mapState([
+            'latitude', 'longitude'
+        ])
+    },
+    methods: {
+        initData() {
+            // 获取商家列表
+            console.log(1)
+            shopList(this.latitude, this.longitude).then( res => {
+                this.shopListArr = res.data
+            })
+        }
+    },
 }
 </script>
 

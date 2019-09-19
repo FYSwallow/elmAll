@@ -1,96 +1,30 @@
 <template>
     <div class="home">
-        <v-header></v-header>
+        <v-header signinUp='home'>
+            <span slot="logo" @click="reload">elm</span>
+        </v-header>
         <div class="currentCity">
             <div class="currentCity_choose">
                 <span>当前定位城市:</span>
                 <span>定位不准时,请在城市列表中选择</span>
             </div>
-            <div class="guess_city">
-                <a href="">成都</a>
+            <router-link class="guess_city" :to="'/city/' +  guessCityid">
+                <a href="">{{guessCity}}</a>
                 <i class="fa fa-angle-right"></i>
-            </div>
+            </router-link>
         </div>
         <div class="hot_city">
             <h3 class="hot_city_title">热门城市</h3>
             <ul class="hot_city_list clear">
-                <li>1234561114545645452</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
-                <li>123</li>
+                <router-link v-for="(item, index) in hotCity" :key="index" :to="'/city/'+ item.id" tag="li" class="ellipsis">{{item.name}}</router-link>
             </ul>
         </div>
         <div class="letter_city">
             <ul class="letter_city_category">
-                <li class="letter_city_category_list">
-                    <h3 class="letter_city_category_list_title">A<span>(按字母排序)</span></h3>
+                <li class="letter_city_category_list " v-for="(value, key, index) in sortgroupCity" :key="index">
+                    <h3 class="letter_city_category_list_title">{{key}}<span v-if="index === 0">(按字母排序)</span></h3>
                     <ul class="letter_city_category_list_item clear">
-                        <li>1234561114545645452</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                    </ul>  
-                </li>
-                <li class="letter_city_category_list">
-                    <h3 class="letter_city_category_list_title">热门城市</h3>
-                    <ul class="letter_city_category_list_item clear">
-                        <li>1234561114545645452</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                    </ul>  
-                </li>
-                <li class="letter_city_category_list">
-                    <h3 class="letter_city_category_list_title">热门城市</h3>
-                    <ul class="letter_city_category_list_item clear">
-                        <li>1234561114545645452</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                    </ul>  
-                </li>
-                <li class="letter_city_category_list">
-                    <h3 class="letter_city_category_list_title">热门城市</h3>
-                    <ul class="letter_city_category_list_item clear">
-                        <li>1234561114545645452</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
+                        <router-link tag="li" :to="'/city/' + item.id" v-for="(item, i) in value" :key="i" class="ellipsis">{{item.name}}</router-link>
                     </ul>  
                 </li>
             </ul>
@@ -101,9 +35,57 @@
 
 <script>
 import Header from '@/common/header/header'
+import {cityGuess, hotcity, groupcity} from '@/api/index.js'
 export default {
+    data() {
+        return {
+            guessCity: '',   //当前城市
+            guessCityid: '', //当前城市id
+            hotCity: [],     //热门城市列表
+            groupCity: {},   //所有城市列表
+        }
+    },
     components: {
         'v-header': Header
+    },
+    created() {
+        cityGuess().then(res => {
+            this.guessCity = res.data.name
+            this.guessCityid = res.data.id
+        })
+        //获取热门城市
+        hotcity().then(res => {
+            console.log(res.data)
+            this.hotCity = res.data;
+            console.log(this.hotCity)
+        })
+        //获取所有城市
+        groupcity().then(res => {
+            this.groupCity = res.data;
+            console.log(this.groupCity)
+        })
+    },
+    computed: {
+        sortgroupCity() {
+            let sortObj = {}
+            for(let i= 65; i <= 90; i++){
+                // fromCharCode该方法是 String 的静态方法，字符串中的每个字符都由单独的 Unicode 数字编码指定
+                if(this.groupCity[String.fromCharCode(i)]) {
+                    sortObj[String.fromCharCode(i)] = this.groupCity[String.fromCharCode(i)]
+                }
+            }
+            console.log(sortObj)
+            return sortObj
+        }
+    },
+    methods: {
+        // 页面初始化数据
+        initData() {
+            
+        },
+        reload() {
+            window.location.reload()
+        }
     }
 }
 </script>
@@ -159,14 +141,13 @@ export default {
             li {
                 @include wh(25%, 28px);
                 @include font(14px, 28px);
+                height: 40px;
+                line-height: 40px;
                 float: left;
                 text-align: center;
                 color: $blue;
                 border-right: 1px solid $bc;
                 border-bottom: 1px solid $bc;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
                 &:nth-of-type(4n) {
                     border-right: none;
                 }
@@ -194,14 +175,14 @@ export default {
                     li {
                         @include wh(25%, 28px);
                         @include font(14px, 28px);
+                        height: 40px;
+                        line-height: 40px;
                         float: left;
                         text-align: center;
                         color: #666;;
                         border-right: 1px solid $bc;
                         border-bottom: 1px solid $bc;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
+                        padding: 0 10px;
                         &:nth-of-type(4n) {
                             border-right: none;
                         }

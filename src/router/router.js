@@ -21,7 +21,7 @@ export default new Router({
         {path: '/', redirect: '/home'},
         {path: '/home', component: Home},
         {path: '/forget', component: Forget},
-        {path: '/city', component: City},
+        {path: '/city/:cityid', component: City},
         {path: '/msite', component: Msite},
         {path: '/food', component: Food},
         {path: '/shop', component: Shop},

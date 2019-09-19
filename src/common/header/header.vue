@@ -1,17 +1,29 @@
 <template>
     <header class="head">
-        <span class="head_left">elm</span>
-        <span class="head_right fa fa-user-circle"></span>
+        <slot name="logo"></slot>
+        <slot name="search"></slot>
+        <section  v-if="goBack" @click="$router.go(-1)" >
+            <span class="fa fa-angle-left"></span>
+        </section>
+        <router-link to="/home" v-if="headTitle" class="head_title " tag="section">
+            <span class="ellipsis">{{headTitle}}</span>
+        </router-link>
+        <router-link to="/home" tag="span" v-if="signinUp">
+            <span class="fa fa-user-circle"></span>
+            <span v-if="false">登录|注册</span>
+        </router-link>
+        <slot name="changecity"></slot>
     </header>
 </template>
 
 <script>
 export default {
-    
+    props: ['goBack', 'headTitle', 'signinUp']
 }
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/style/mixin';
 .head {
     width: 100%;
     height: 45px;
@@ -22,15 +34,17 @@ export default {
     padding: 0 10px;
     position: fixed;
     z-index: 99;
-    span {
-        display: inline-block;
+    display: flex;
+    justify-content: space-between;
+    .head_title {
         position: absolute;
-    }
-    .head_left {
-    }
-    .head_right {
-        right: 10px;
-        top: 13px;
+        width: 100%;
+        height: 45px;
+        text-align: center;
+        span {
+            display: inline-block;
+            width: 200px;
+        }
     }
 }  
 </style>
