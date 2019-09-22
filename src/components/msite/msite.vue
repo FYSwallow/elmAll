@@ -10,7 +10,7 @@
                 <van-swipe :autoplay="3000" indicator-color="#3190e8">
                     <van-swipe-item v-for="(value, index) in foodTypes" :key="index">
                         <ul class="clear">
-                            <router-link v-for="item in value" :key="item.id" tag="li" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: item.id}}">
+                            <router-link v-for="item in value" :key="item.id" tag="li" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: getCategoryId(item.link)}}">
                                 <img :src="imgBaseUrl + item.image_url">
                                 <span>{{item.title}}</span>
                             </router-link>

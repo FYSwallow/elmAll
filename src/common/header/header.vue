@@ -5,9 +5,9 @@
         <section  v-if="goBack" @click="$router.go(-1)" >
             <span class="fa fa-angle-left"></span>
         </section>
-        <router-link to="/home" v-if="headTitle" class="head_title " tag="section">
+        <section v-if="headTitle" class="head_title ">
             <span class="ellipsis">{{headTitle}}</span>
-        </router-link>
+        </section>
         <router-link to="/home" tag="span" v-if="signinUp">
             <span class="fa fa-user-circle"></span>
             <span v-if="false">登录|注册</span>

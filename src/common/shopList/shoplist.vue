@@ -56,7 +56,7 @@ import {shopList} from '@/api/index'
 import Loading from '@/common/loading/loading'
 import {getStore} from '@/api/localStorage'
 export default {
-    props: ['geohash'],
+    props: ['restaurantCategoryId', 'restaurantCategoryIds', 'sortByType', 'deliveryMode', 'supportIds', 'confirmSelect', 'geohash'],
     data() {
         return {
             offset: 0, // 批次加载店铺列表，每次加载20个 limit = 20
@@ -93,7 +93,6 @@ export default {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
             let clientHeight = document.body.clientHeight 
             let scrollHeight = document.body.scrollHeight
-            console.log(scrollTop + ','+ clientHeight+ ',' + scrollHeight)
             // 到达页面底部时,加载数据
             if(this.shopListArr.length >= 20 && scrollTop === scrollHeight - clientHeight) {
                 this.showLoading = true;
@@ -118,7 +117,30 @@ export default {
         },
         hideLoading() {
             this.showLoading = false
-        } 
+        },
+        // 监听父级组件传来的数据变化函数
+        async listenPropChange() {
+            this.showLoading = true
+            this.offset = 0
+            const res = await shopList(this.latitude, this.longitude, this.offset, '', this.restaurantCategoryIds, this.sortByType, this.deliveryMode, this.supportIds)
+            console.log(1)
+            this.hideLoading()
+            this.shopListArr = [...res.data]
+        }
+    },
+    watch: {
+        //监听父级传来的restaurantCategoryIds，当值发生变化的时候重新获取餐馆数据，作用于排序和筛选
+		restaurantCategoryIds: function (value){
+			this.listenPropChange();
+		},
+		//监听父级传来的排序方式
+		sortByType: function (value){
+			this.listenPropChange();
+		},
+		//监听父级的确认按钮是否被点击，并且返回一个自定义事件通知父级，已经接收到数据，此时父级才可以清除已选状态
+		confirmSelect: function (value){
+			this.listenPropChange();
+		}
     },
     components: {
         Loading,

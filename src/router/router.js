@@ -25,7 +25,7 @@ export default new Router({
         {path: '/msite', component: Msite},
         {path: '/food', component: Food},
         {path: '/shop', component: Shop},
-        {path: '/search', component: Search},
+        {path: '/search/:geohash', component: Search},
         {path: '/banlance', component: Banlance},
         {path: '/user', component: User},
         {path: '/user/info', component: Info},

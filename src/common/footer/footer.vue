@@ -1,8 +1,8 @@
 <template>
     <div class="tabbar">
         <ul>
-            <router-link  tag="li" to="/msite"><i class="fa fa-home"></i><span>外卖</span></router-link>
-            <router-link  tag="li" to="/search"><i class="fa fa-search"></i><span>搜索</span></router-link>
+            <router-link  tag="li" :to="{path: '/msite', query: {geohash}}"><i class="fa fa-home"></i><span>外卖</span></router-link>
+            <router-link  tag="li" :to="'/search/' + geohash" ><i class="fa fa-search"></i><span>搜索</span></router-link>
             <router-link  tag="li" to="/user"><i class="fa fa-shopping-cart"></i><span>订单</span></router-link>
             <router-link  tag="li" to="/user"><i class="fa fa-user"></i><span>我的</span></router-link>
         </ul>
@@ -10,9 +10,11 @@
 </template>
 
 <script>
-
+import {mapState} from 'vuex'
 export default {
-    
+    computed: {
+        ...mapState(['geohash'])
+    },
 }
 </script>
 
