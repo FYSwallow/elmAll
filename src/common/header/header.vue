@@ -5,14 +5,16 @@
         <section  v-if="goBack" @click="$router.go(-1)" >
             <span class="fa fa-angle-left"></span>
         </section>
-        <router-link to="/home" v-if="headTitle" class="head_title " tag="section">
-            <span class="ellipsis">{{headTitle}}</span>
-        </router-link>
+        <section v-if="headTitle" class="head_title">
+            <slot name="msiteTitle" v-if="msiteTitle"></slot>
+        </section>
         <router-link to="/home" tag="span" v-if="signinUp">
             <span class="fa fa-user-circle"></span>
             <span v-if="false">登录|注册</span>
         </router-link>
         <slot name="changecity"></slot>
+        <slot name="msite-title"></slot>
+
     </header>
 </template>
 

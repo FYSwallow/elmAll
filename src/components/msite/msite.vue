@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-header :headTitle="msiteTitle" signinUp='msite'>
+        <v-header signinUp='msite'>
             <span slot="search">
                 <router-link to="/search" class="fa fa-search search_icon" tag="span"></router-link>
             </span>
