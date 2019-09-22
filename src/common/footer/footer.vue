@@ -1,10 +1,10 @@
 <template>
     <div class="tabbar">
         <ul>
-            <li><img src="@/assets/nav.jpg" alt=""><span class="active">外卖</span></li>
-            <li><img src="@/assets/nav.jpg" alt=""><span>搜索</span></li>
-            <li><img src="@/assets/nav.jpg" alt=""><span>订单</span></li>
-            <li><img src="@/assets/nav.jpg" alt=""><span>我的</span></li>
+            <router-link  tag="li" to="/msite"><i class="fa fa-home"></i><span>外卖</span></router-link>
+            <router-link  tag="li" to="/search"><i class="fa fa-search"></i><span>搜索</span></router-link>
+            <router-link  tag="li" to="/user"><i class="fa fa-shopping-cart"></i><span>订单</span></router-link>
+            <router-link  tag="li" to="/user"><i class="fa fa-user"></i><span>我的</span></router-link>
         </ul>
     </div>
 </template>
@@ -25,25 +25,27 @@ export default {
         width: 100%;
         height: 50px;
         border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
         display: flex;
         background-color: #fff;
         padding: 2px;
         li {
             flex: 1;
+            padding-top: 5px;
             justify-content: center;
             align-items: center;
             text-align: center;
-            img{
+            color: #666;
+            &.active {
+                color: #3190e8;
+            }
+            i{
+                font-size: 20px;
                 display: block;
                 margin: auto;
-                width: 25px;
             }
             span {
-                color: #666;
-                font-size: 14px;
-                &.active {
-                    color: #3190e8;
-                }
+                font-size: 14px;  
             }
         }
     }

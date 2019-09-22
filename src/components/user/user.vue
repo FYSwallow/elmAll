@@ -1,6 +1,6 @@
 <template>
     <div class="user">
-        <Header></Header>
+        <Header headTitle = '我的' goBack = 'true'></Header>
         <div class="user_detail">
             <img src="@/assets/images/avactor.jpg" alt="">
             <section class="user_info">
@@ -10,7 +10,7 @@
                 </div>
                 <div class="user_tel"><i></i><span>暂无绑定手机号</span></div>
             </section>
-            <span class="user_link">&gt;</span>
+            <span class="user_link fa fa-angle-right"></span>
         </div>
         <div class="user_data">
             <ul>
@@ -21,15 +21,15 @@
         </div>
         <section class="user_profile">
             <ul>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">我的订单</span><span>&gt;</span></li>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">积分商城</span><span>&gt;</span></li>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">饿了吗会员卡</span><span>&gt;</span></li>
+                <li><span><img src="@/assets/images/avactor.jpg" alt="">我的订单</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="@/assets/images/avactor.jpg" alt="">积分商城</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="@/assets/images/avactor.jpg" alt="">饿了吗会员卡</span><span class="fa fa-angle-right"></span></li>
             </ul>
         </section>
         <section class="user_profile">
             <ul>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">服务中心</span><span>&gt;</span></li>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">下载饿了么APP</span><span>&gt;</span></li>
+                <li><span><img src="@/assets/images/avactor.jpg" alt="">服务中心</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="@/assets/images/avactor.jpg" alt="">下载饿了么APP</span><span class="fa fa-angle-right"></span></li>
             </ul>
         </section>
         <Footer></Footer>
@@ -53,7 +53,7 @@ export default {
 .user_detail {
     display: flex;
     background-color: $blue;
-    padding: 65px 20px 20px;
+    padding: 45px 20px 20px;
     img {
         width: 80px;
         height: 80px;
@@ -134,6 +134,7 @@ export default {
             }
             span:nth-of-type(2) {
                 color: #999;
+                font-size: 20px;
             }
         }
     }

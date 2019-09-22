@@ -1,36 +1,34 @@
 <template>
     <div>
-        <ul class="shop_list">
+        <ul class="shop_list" v-if="shopListArr.length">
             <li class="shop_list_item" v-for="(item, index) in shopListArr" :key="index">
                 <img :src="imgBaseUrl + item.image_path">
                 <section>
                     <header class="shop_detail">
                         <div class="shop_detail_left">
-                            <h4 class="shop_title">{{item.name}}</h4>
+                            <h4 class="shop_title ellipsis" :class="item.is_premium? 'premium': ''">{{item.name}}</h4>
                         </div>
                         <div class="shop_detail_right">
-                            <span>保</span>
-                            <span>准</span>
-                            <span>票</span>
+                            <span v-for="supportItem in item.supports" :key="supportItem.id">{{supportItem.icon_name}}</span>
                         </div>
                     </header>
                     <div class="rating">
                         <div class="rating_left">
                             <div class="rating_star">
                                 <div class="rating_star_white">★★★★★</div>
-                                <div class="rating_star_orange">★★★★★</div>
+                                <div class="rating_star_orange" :style="'width:' +item.rating / 5 * 48+ 'px' ">★★★★★</div>
                             </div>
                             <div class="rating_score">{{item.rating}}</div>
                             <div class="seller_num">月售{{item.recent_order_num}}单</div>
                         </div>
                         <div class="rating_right">
                             <span v-if="item.delivery_mode">{{item.delivery_mode.text}}</span>
-                            <span>准时达</span>
+                            <span v-if="zhunshi(item.supports)">准时达</span>
                         </div>
                     </div>
                     <div class="distance">
                         <div class="distance_left">
-                            ¥{{item.float_minimum_order_amount}}起送 / 
+                            ¥{{item.float_minimum_order_amount}}起送 / {{item.piecewise_agent_fee.tips}}
                         </div>
                         <div class="distance_right">
                             <span>{{item.distance}}</span>/
@@ -40,38 +38,91 @@
                 </section>
             </li>
         </ul>
+        <ul v-else class="shop_list">
+			<li class="shop_list_item" v-for="item in 10" :key="item">
+				<img src="@/assets/images/shopback.svg" class="list_back_svg">
+			</li>
+		</ul>
+        <p class="empty_end" v-if="touchend">没有更多了</p>
+        <transition name="loading">
+            <Loading v-show="showLoading"></Loading>
+        </transition> 
     </div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
 import {shopList} from '@/api/index'
+import Loading from '@/common/loading/loading'
+import {getStore} from '@/api/localStorage'
 export default {
     props: ['geohash'],
     data() {
         return {
             offset: 0, // 批次加载店铺列表，每次加载20个 limit = 20
             shopListArr:[], // 店铺列表数据
-            imgBaseUrl: '//elm.cangdu.org/img/' //
+            imgBaseUrl: '//elm.cangdu.org/img/', //
+            touchend: false, //没有更多数据
+            showLoading: true, //显示加载动画
         }
     },
     created() {
         this.initData()
     },
+    mounted() {
+        document.body.addEventListener('scroll', this.loadMore)
+    },
     computed: {
         ...mapState([
             'latitude', 'longitude'
-        ])
+        ]),    
     },
     methods: {
-        initData() {
+        async initData() {
             // 获取商家列表
-            console.log(1)
-            shopList(this.latitude, this.longitude).then( res => {
-                this.shopListArr = res.data
-            })
-        }
+            const res = await shopList(this.latitude, this.longitude, this.offset)
+            this.hideLoading()
+            this.shopListArr = res.data
+            if(this.shopListArr.length < 20) {
+                this.touchend = true
+            }
+            console.log(this.shopListArr)
+            
+        },
+        async loadMore(){
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+            let clientHeight = document.body.clientHeight 
+            let scrollHeight = document.body.scrollHeight
+            console.log(scrollTop + ','+ clientHeight+ ',' + scrollHeight)
+            // 到达页面底部时,加载数据
+            if(this.shopListArr.length >= 20 && scrollTop === scrollHeight - clientHeight) {
+                this.showLoading = true;
+                this.offset += 20;
+                const res = await shopList(this.latitude, this.longitude, this.offset)
+                this.hideLoading()
+                this.shopListArr = [...this.shopListArr, ...res.data]
+               
+            }
+        },
+        // 判断是否能准时送达
+        zhunshi(supports) {
+            let falg = false
+            if(supports.length){
+                supports.forEach(item => {
+                    if(item.icon_name === '准'){
+                        falg = true
+                    }
+                })
+            }
+            return falg
+        },
+        hideLoading() {
+            this.showLoading = false
+        } 
     },
+    components: {
+        Loading,
+    }
 }
 </script>
 
@@ -83,9 +134,14 @@ export default {
         display: flex;
         border-bottom: 1px solid #eee;
         padding: 16px 10px;
+        .list_back_svg {
+            width: 100%;
+            height: 100%;
+        }
         img {
             width: 70px;
             height: 70px;
+            display: inline-block;
             padding-right: 10px;
         }
         section {
@@ -95,18 +151,21 @@ export default {
             .shop_detail {
                 @include fj;
                 .shop_detail_left {
-                    transform: scale(.7) translateX(-20px);
+                    transform: scale(.7) translateX(-60px);
                     .shop_title {
+                        width: 200px;
                         font-weight: 700;
-                        font-size: 16px;
+                        font-size: 22px;
                         padding-left: 10px;
-                        &::before {
-                            content: '品牌';
-                            background-color: #FFD930;
-                            font-size: 12px;
-                            padding: 0 5px;
-                            line-height: 12px;
-                        }
+                        color: #000;
+                    }
+                    .premium::before {
+                        content: '品牌';
+                        background-color: #FFD930;
+                        font-size: 12px;
+                        padding: 0 5px;
+                        line-height: 12px;
+                        margin-right: 10px;
                     }
                 }
                 .shop_detail_right {
@@ -128,11 +187,16 @@ export default {
                     }
                     .rating_star {
                         position: relative;
+                        width: 48px;
+                        .rating_star_white {
+                            color: #999;
+                        }
                         .rating_star_orange {
                             position: absolute;
                             top: 0;
                             left: 0;
                             color: #FF9A0D;
+                            overflow: hidden;
                         }
                     }
                     .rating_score {
@@ -172,5 +236,11 @@ export default {
         }
     }
     
-}    
+}
+.loading-enter-active, .loading-leave-active {
+    transition: opacity 1s
+}
+.loading-enter, .loading-leave-active {
+    opacity: 0
+}
 </style>

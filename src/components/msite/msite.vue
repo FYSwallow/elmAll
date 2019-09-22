@@ -2,7 +2,7 @@
     <div>
         <v-header :headTitle="msiteTitle" signinUp='msite'>
             <span slot="search">
-                <span class="fa fa-search search_icon"></span>
+                <router-link to="/search" class="fa fa-search search_icon" tag="span"></router-link>
             </span>
         </v-header>
         <div class="msite_container">
@@ -10,10 +10,10 @@
                 <van-swipe :autoplay="3000" indicator-color="#3190e8">
                     <van-swipe-item v-for="(value, index) in foodTypes" :key="index">
                         <ul class="clear">
-                            <li v-for="item in value" :key="item.id">
+                            <router-link v-for="item in value" :key="item.id" tag="li" :to="{path: '/food', query: {geohash, title: item.title, restaurant_category_id: item.id}}">
                                 <img :src="imgBaseUrl + item.image_url">
                                 <span>{{item.title}}</span>
-                            </li>
+                            </router-link>
                         </ul>
                     </van-swipe-item>
                 </van-swipe>
@@ -54,7 +54,7 @@ export default {
         this.getMsiteFoodTypes()
     },
     methods: {
-        initData(){
+        async initData(){
             if(!this.$route.query.geohash){
                 cityGuess().then(res => {
                     this.geohash = res.data.latitude + ',' + res.data.longitude
@@ -65,31 +65,39 @@ export default {
             // 保存geohash到vuex
             // this.$store.commit("SAVE_GEOHASH", this.geohash)
             this.SAVE_GEOHASH(this.geohash)
-            msiteAddress(this.geohash).then(res => {
-                this.msiteTitle = res.data.name
-                // 保存geohash到vuex
-                // this.$store.commit("RECORD_ADDRESS", res.data)
-                this.RECORD_ADDRESS(res.data)
-            })
+            const res = await msiteAddress(this.geohash)
+            console.log(res.data)
+            this.msiteTitle = res.data.name
+            // 保存geohash到vuex
+            // this.$store.commit("RECORD_ADDRESS", res.data)
+            this.RECORD_ADDRESS(res.data)
             this.hasGetData = true
         },
         ...mapMutations([
             'RECORD_ADDRESS', 'SAVE_GEOHASH'
         ]),
         // 获取轮播导航列表
-        getMsiteFoodTypes() {
-            msiteFoodTypes(this.geohash).then(res => {
-                // 将获得的数据按8条分组
-                console.log(res.data.length)
-                let resLength = res.data.length
-                let resArr = [...res.data] // 返回一个新的数组
-                let foodArr = []
-                for (let i = 0, j = 0; i < resLength; i += 8, j++) {
-                    foodArr[j] = resArr.splice(0, 8) //splice会修改原来的数组,然后返回被删除的项目
-                }
-                this.foodTypes = foodArr
-            })
-        }
+        async getMsiteFoodTypes() {
+            const res = await msiteFoodTypes(this.geohash)
+            console.log(res.data)
+            // 将获得的数据按8条分组
+            let resLength = res.data.length
+            let resArr = [...res.data] // 返回一个新的数组
+            let foodArr = []
+            for (let i = 0, j = 0; i < resLength; i += 8, j++) {
+                foodArr[j] = resArr.splice(0, 8) //splice会修改原来的数组,然后返回被删除的项目
+            }
+            this.foodTypes = foodArr
+        },
+        // 解码url地址,去求restaurant_category_id值
+        getCategoryId(url){
+    		let urlData = decodeURIComponent(url.split('=')[1].replace('&target_name',''));
+    		if (/restaurant_category_id/gi.test(urlData)) {
+    			return JSON.parse(urlData).restaurant_category_id.id
+    		}else{
+    			return ''
+    		}
+    	}
         
     },
     components: {

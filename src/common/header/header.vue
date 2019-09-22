@@ -38,9 +38,12 @@ export default {
     justify-content: space-between;
     .head_title {
         position: absolute;
-        width: 100%;
+        width: 50%;
         height: 45px;
+        left: 50%;
+        transform: translateX(-50%);
         text-align: center;
+        font-weight: 600;
         span {
             display: inline-block;
             width: 200px;

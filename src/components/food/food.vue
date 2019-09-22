@@ -1,49 +1,41 @@
 <template>
     <div class="food">
-        <v-header></v-header>
+        <v-header :headTitle = "headTitle" goBack="true"></v-header>
         <div class="food_container">
             <section class="sort_container">
-                <div class="sort_item">
-                    <span>甜品饮料</span>
+                <div class="sort_item" :class="{choose_type:sortBy == 'food'}" @click="chooseType('food')">
+                    <span>{{foodTitle}}</span>
                     <i class="fa fa-angle-down"></i>
                 </div>
-                <div class="sort_item">
+                <div class="sort_item" :class="{choose_type:sortBy == 'sort'}" @click="chooseType('sort')">
                     <span>排序</span>
                     <i class="fa fa-angle-down"></i>
                 </div>
-                <div class="sort_item">
+                <div class="sort_item" :class="{choose_type:sortBy == 'activity'}" @click="chooseType('activity')">
                     <span>筛选</span>
                     <i class="fa fa-angle-down"></i>
                 </div>
             </section>
             <section class="category_container">
-                <div class="sort_item_category_type" v-show="false">
+                <div class="sort_item_category_type" v-show="sortBy == 'food'">
                     <div class="sort_item_category_left">
                         <ul>
-                            <li class="active">
-                                <section><img src="@/assets/nav.jpg" alt="">小吃</section>
-                                <section><span>123</span>&gt;</section>
-                            </li>
-                            <li>
-                                <section><img src="@/assets/nav.jpg" alt="">小吃</section>
-                                <section><span>123</span>&gt;</section>
-                            </li>
-                            <li>
-                                <section><img src="@/assets/nav.jpg" alt="">小吃</section>
-                                <section><span>123</span>&gt;</section>
+                            <li v-for="(item, index) in category" :key="index" :class="{'active': chooseType === index}" @click="selectCategoryName(item.id, index)">
+                                <section><img :src="getImgPath(item.image_url)" v-if="index" alt="">{{item.name}}</section>
+                                <section><span>{{item.count}}</span>&gt;</section>
                             </li>
                         </ul>
                     </div>
                     <div class="sort_item_category_right">
                         <ul>
-                            <li>
-                                <span>饺子</span>
-                                <span>10</span>
+                            <li v-for="item in categoryDetail" :key="item.id">
+                                <span>{{item.name}}</span>
+                                <span>{{item.count}}</span>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div class="sort_item_category_order" v-show="false">
+                <div class="sort_item_category_order" v-show="sortBy == 'sort'">
                     <ul>
                         <li>
                             <img src="@/assets/nav.jpg" alt="">
@@ -55,28 +47,32 @@
                         </li>
                     </ul>
                 </div>
-                <div class="sort_item_category_filter" >
-                    <section>
-                        <div class="filter_style">配送方式</div>
-                        <div class="filter_style_detail">
-                            <ul>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                            </ul>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="filter_style">商家属性(可以多选)</div>
-                        <div class="filter_style_detail">
-                            <ul>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                                <li><i></i><span>蜂鸟配送</span></li>
-                            </ul>
-                        </div>
-                    </section>
+                <div class="sort_item_category_filter" v-show="sortBy == 'activity'">
+                    <div class="chooseMethods">
+                        <section>
+                            <div class="filter_style">配送方式</div>
+                            <div class="filter_style_detail">
+                                <ul>
+                                    <li  v-for="(item, index) in Delivery" :key="index">
+                                        <img src="@/assets/images/bird.png" alt="">
+                                        <span>{{item.text}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section>
+                            <div class="filter_style">商家属性(可以多选)</div>
+                            <div class="filter_style_detail">
+                                <ul>
+                                    <li v-for="(item,index) in Activity" :key="index">
+                                        <!-- 动态绑定的img src属性需要将图片放入static文件夹 -->
+                                        <img :src="'images/logo'+ (index + 1) +'.png'">
+                                        <span>{{item.name}}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
                     <footer>
                         <button class="clear_all">清空</button>
                         <button class="make_sure">确定</button>
@@ -87,21 +83,112 @@
         <div class="shoplist">
             <v-shopList></v-shopList>
         </div>
-        <div class="back_cover"></div>
+        <div class="back_cover" v-show="sortBy"></div>
     </div>
     
 </template>
 
 <script>
+import {mapState, mapMutations} from 'vuex'
 import Header from '@/common/header/header'
 import ShopList from '@/common/shopList/shoplist'
-
+import {
+    foodCategory,
+    foodDelivery,
+    foodActivity
+} from '@/api/index'
 
 export default {
+    data() {
+        return {
+            geohash: "", // city页面传递过来的地址geohash
+            headTitle: "", // msiet页面头部标题
+            foodTitle: "", // 排序左侧头部标题
+            restaurant_category_id: "", // 食品类型id值
+            position: {},
+            sortBy: "", // 筛选的条件,
+            category: null, // category分类左侧数据
+            categoryDetail: null, // category分类右侧的详细数据
+            Delivery: null, // 配送方式数据
+            Activity: null,
+        }
+    },
+    created() {
+        this.initData()
+        this.getCategory()
+        this.getDelivery()
+        this.getActivity()
+    },
+    computed: {
+        ...mapState(['latitude', 'longitude'])
+    },
+    methods: {
+        ...mapMutations(['RECORD_ADDRESS']),
+        initData() {
+            this.geohash = this.$route.query.geohash
+            this.foodTitle = this.$route.query.title
+            this.headTitle = this.foodTitle
+            this.restaurant_category_id = this.$route.query.restaurant_category_id;
+            
+        },
+        async getCategory() {
+            const res = await foodCategory(this.latitude, this.longitude)
+            this.category = res.data
+            this.category.forEach(item => {
+                this.categoryDetail = item.sub_categories
+            })
+            console.log(this.categoryDetail)
+            console.log(this.category)
+        },
+        async getDelivery() {
+            const res = await foodDelivery(this.latitude, this.longitude)
+            this.Delivery = res.data
+        },
+        async getActivity() {
+            const res = await foodActivity(this.latitude, this.longitude)
+            this.Activity = res.data
+        },
+        chooseType(type) {
+            if(this.sortBy !== type) {
+                this.sortBy = type
+                if(type == 'food') {
+                    this.foodTitle = '分类'
+                }
+                else {
+                    this.foodTitle = this.headTitle
+                }
+            }else {
+                this.sortBy = ''
+                if(type == 'food') {
+                    this.foodTitle = this.headTitle
+                }
+            }
+        },
+        // 点击分类列表中右边的选项
+        selectCategoryName(id, index){
+            if(index === 0) {
+
+            }
+        },
+
+        getImgPath(path) {
+			let suffix;
+			if (!path) {
+				return '//elm.cangdu.org/img/default.jpg'
+			}
+			if (path.indexOf('jpeg') !== -1) {
+				suffix = '.jpeg'
+			} else {
+				suffix = '.png'
+			}
+			let url = '/' + path.substr(0, 1) + '/' + path.substr(1, 2) + '/' + path.substr(3) + suffix;
+			return 'https://fuss10.elemecdn.com' + url
+		},
+    },
     components: {
         'v-header': Header,
         'v-shopList': ShopList
-    }    
+    }  
 }
 </script>
 
@@ -128,6 +215,15 @@ export default {
                 flex: 1;
                 border-right: 1px solid #f1f1f1;
                 @include sc(14px, #444);
+                i {
+                    transition: all 0.2s linear;
+                }
+            }
+            .choose_type {
+                color: $blue;
+                i {
+                    transform: rotate(180deg);
+                }
             }
         }
         .category_container {
@@ -138,7 +234,7 @@ export default {
                 display: flex;
                 .sort_item_category_left {
                     flex: 1;
-                    background-color: #F1F1F1;
+                    background-color: #eee;
                     ul {
                         li {
                         @include fj;
@@ -149,9 +245,11 @@ export default {
                         }
                         section:nth-of-type(1){
                             img {
-                                    width: 30px;
-                                    height: 14px;
-                                }
+                                width: 20px;
+                                height: 20px;
+                                vertical-align: middle;
+                                margin-right: 10px;
+                            }
                         }
                         section:nth-of-type(2) {
                             span {
@@ -176,7 +274,7 @@ export default {
                         li {
                             @include fj;
                             border-bottom: 1px solid #ccc;
-                            padding: 10px 0;
+                            padding: 10px 10px 10px 0;
                         }
                     }
                 }
@@ -209,27 +307,36 @@ export default {
             .sort_item_category_filter {
                 background-color: #fff;
                 @include sc(12px, #333);
-                padding: 10px;
-                section {
-                    .filter_style{
-                        height: 40px;
-                        line-height: 40px;
-                    }
-                    .filter_style_detail {
-                        line-height: 30px;
-                        ul {
-                            @include fj;
-                            flex-wrap: wrap;
-                            li {
-                                height: 30px;
-                                width: 30%;
-                                border: 1px solid #eee;
-                                margin: 5px;
-                                border-radius: 3px;
+                .chooseMethods {
+                    padding: 10px;
+                    section {
+                        .filter_style{
+                            height: 40px;
+                            line-height: 40px;
+                        }
+                        .filter_style_detail {
+                            line-height: 30px;
+                            ul {
+                                @include fj;
+                                flex-wrap: wrap;
+                                li {
+                                    width: 30%;
+                                    border: 1px solid #eee;
+                                    padding: 5px;
+                                    border-radius: 3px;
+                                    margin-bottom: 10px;
+                                    img {
+                                        height: 30px;
+                                        vertical-align: middle;
+                                        margin-right: 5px;
+                                    }
+
+                                }
                             }
                         }
                     }
                 }
+                
                 footer {
                     @include fj;
                     padding: 5px 10px;
@@ -254,7 +361,7 @@ export default {
         }  
     } 
     .shoplist {
-        padding-top: 50px;
+        padding-top: 95px;
         z-index: 9;
     }
     .back_cover {

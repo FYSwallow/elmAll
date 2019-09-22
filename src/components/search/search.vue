@@ -1,6 +1,6 @@
 <template>
     <div class="shop_search">
-        <v-header></v-header>
+        <v-header goBack = 'true' headTitle = '搜索'></v-header>
         <div class="search_form">
             <input type="search" placeholder="请输入商家或美食名称" class="input_search">
             <input type="submit" value="提交" class="input_submit">

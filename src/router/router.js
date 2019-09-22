@@ -33,5 +33,6 @@ export default new Router({
         {path: '/user/info/address', component: Address},
         {path: '/user/info/address/add', component: Add},
         {path: '/user/info/address/add/addDetail', component: AddDetail},
-    ]
+    ],
+    linkActiveClass: 'active'
 })

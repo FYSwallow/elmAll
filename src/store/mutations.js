@@ -2,6 +2,7 @@ import {
     RECORD_ADDRESS, 
     SAVE_GEOHASH
 } from './mutation-types'
+import {getStore, setStore} from '@/api/localStorage'
 export default {
     //记录当前经纬度
     [RECORD_ADDRESS](state, {
