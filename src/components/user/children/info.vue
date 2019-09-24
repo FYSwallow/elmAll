@@ -1,65 +1,129 @@
 <template>
     <div>
-        <Header></Header>
+        <Header headTitle="账户信息" goBack = 'true'></Header>
         <div class="user_info">
-            <div class="user_info_item">
-                <input type="file">
+            <div class="user_info_item item_first">
+                <input type="file" ref="user_avactor" @change="uploadAvatar">
                 <h3 class="item_head">头像</h3>
                 <div class="item_detail">
-                    <p><img src="@/assets/images/avactor.jpg" alt=""><span>&gt;</span></p>    
+                    <p><img :src="avactor" class="head_avactor"><span class="fa fa-angle-right"></span></p>    
                 </div>
             </div>
-            <div class="user_info_item">
+            <router-link  class="user_info_item" to="/user/info/setusername" tag="div">
                 <h3 class="item_head">用户名</h3>
                 <div class="item_detail">
-                    <p>15226511191<span>&gt;</span></p>
-                    
+                    <p>{{username}}<span class="fa fa-angle-right"></span></p>        
                 </div>
-            </div>
-            <div class="user_info_item">
+            </router-link>
+            <router-link  class="user_info_item" to="/user/info/address" tag="div">
                 <h3 class="item_head">收货地址</h3>
                 <div class="item_detail">
-                    <span>&gt;</span>
+                    <span class="fa fa-angle-right"></span>
                 </div>
-            </div>
+            </router-link>
             <div class="user_info_head">
                 账号绑定
             </div>
-            <div class="user_info_item">
-                <h3 class="item_head">手机</h3>
+            <section  class="user_info_item" @click="showTip">
+                <h3 class="item_head">
+                    <img src="@/assets/images/tel_logo.png">
+                    <span>手机</span>
+                </h3>
                 <div class="item_detail">
-                    <span>&gt;</span>
+                    <span class="fa fa-angle-right"></span>
                 </div>
-            </div>
+            </section>
             <div class="user_info_head">
                 账号绑定
             </div>
-            <div class="user_info_item">
+            <router-link  class="user_info_item" to="/forget/forget" tag="div">
                 <h3 class="item_head">登录密码</h3>
                 <div class="item_detail">
-                    <p>修改<span>&gt;</span></p>
-                    
+                    <p>修改<span class="fa fa-angle-right"></span></p>
                 </div>
-            </div>
-            <button class="exit">退出登录</button>
-            <div class="back_over"></div>
-            <div class="choose_exit">
-                <img src="@/assets/images/avactor.jpg" alt="" class="exit_logo">
+            </router-link>
+            <button class="exit" @click="exitlogin">退出登录</button>
+            <div class="back_over" v-show="show"></div>
+            <div class="choose_exit" v-show="show">
+                <img src="images/avactor.jpg" alt="" class="exit_logo">
                 <h3 class="exit_title">是否退出登录</h3>
                 <div class="choose">
-                    <button class="exit_wait">再等等</button>
-                    <button class="exit_login">退出登录</button>
+                    <button class="exit_wait" @click="waitingThing">再等等</button>
+                    <button class="exit_login" @click="outLogin">退出登录</button>
                 </div>
             </div>
         </div>
+        <AlertTip :alertText="alertText" @closeTip="closeTip" v-if="showAlert"></AlertTip>
     </div>
 </template>
 
 <script>
+import {mapState, mapMutations} from 'vuex'
 import Header from '@/common/header/header'
+import AlertTip from '@/common/alertTip/alertTip'
 export default {
+    data() {
+        return {
+            username: null,
+            show: false,
+            showAlert: false, //显示提示组件
+            alertText: null, //提示的内容
+        }
+    },
+    created() {
+        if(!this.userInfo){
+            this.$router.replace('/login')
+        }
+        this.initData()
+    },
+    computed: {
+        ...mapState(
+            ['userInfo', 'avactor']
+        )
+    },
+    methods: {
+        ...mapMutations(
+            ['OUT_LOGIN']
+        ),
+        initData() {
+            if(this.userInfo.username){
+                this.username = this.userInfo.username
+            }else {
+                this.username = this.userInfo.phoneNumber
+            }   
+        },
+        uploadAvatar() {
+            let input = this.$refs.user_avactor
+            // let data = new FormData()
+            // data.append('file', input.files[0])
+            // try{
+                
+            // }catch {
+
+            // }
+            // 通过提交data数据,返回服务器的数据，再将服务器传递过来的图片赋值给avactor
+        },
+        exitlogin() {
+            this.show=true
+        },
+        waitingThing(){
+            this.show=false
+        },
+        outLogin() {
+            this.OUT_LOGIN()
+            this.$router.go(-1)
+        },
+        showTip(){
+            this.showAlert = true;
+            this.alertText = '请在手机APP中设置';
+        },
+        closeTip(){
+            this.showAlert = false
+        }
+    },
     components: {
-        Header
+        Header,
+        AlertTip
     }
 }
 </script>
@@ -75,7 +139,7 @@ export default {
         height: 50px;
         padding: 0 10px; 
         border-bottom : 1px solid #ccc;
-        &:first-of-type{
+        &.item_first{
             margin-top: 10px;
             height: 80px;
             position: relative;
@@ -86,15 +150,23 @@ export default {
                 height: 100%;
                 opacity: 0;
             }
-            img {
+            .head_avactor {
                 width: 60px;
                 height: 60px;
                 vertical-align: middle ;
+                border-radius: 30px;
             }
         }
         .item_head {
             font-size: 16px;
             font-weight: normal;
+            img {
+                width: 20px;
+                height: 25px;
+                vertical-align: middle;
+                border-radius: 3px;
+                margin-right: 5px;
+            }
         }
         .item_detail {
             font-size: 18px;

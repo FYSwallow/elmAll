@@ -1,9 +1,12 @@
 <template>
     <div>
-        <v-header :headTitle="msiteTitle" signinUp='msite'>
+        <v-header signinUp='msite'>
             <span slot="search">
                 <router-link to="/search" class="fa fa-search search_icon" tag="span"></router-link>
             </span>
+            <router-link to="/home" slot="msite-title" class="msite_title" tag="span">
+                <span class="title_text ellipsis">{{msiteTitle}}</span>
+            </router-link>
         </v-header>
         <div class="msite_container">
             <div class="swiper_container">
@@ -110,6 +113,13 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/assets/style/mixin';
+.msite_title{
+    width: 50%;
+    .title_text{
+        width: 100%;
+        display: inline-block;
+    }
+}
 .msite_container {
     padding-top: 45px;
     .swiper_container {

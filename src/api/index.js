@@ -112,4 +112,23 @@ export const searchRestaurant = (geohash, keyword) => ajax('/v4/restaurants', {
 	geohash,
 	keyword,
 	type: 'search'
+})
+/**
+ * 获取图片验证码
+ */
+
+export const getcaptchas = () => ajax('/v1/captchas', {},'POST');
+
+/**
+ * 账号密码登录
+ */
+export const accountLogin = (username, password, captcha_code) => ajax('/v2/login', {username, password, captcha_code}, 'POST');
+
+/**
+ * 搜索地址
+ */
+
+export const searchNearby = keyword => ajax('/v1/pois', {
+	type: 'nearby',
+	keyword
 });

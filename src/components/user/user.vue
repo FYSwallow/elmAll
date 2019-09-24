@@ -1,17 +1,19 @@
 <template>
     <div class="user">
-        <Header headTitle = '我的' goBack = 'true'></Header>
-        <div class="user_detail">
-            <img src="@/assets/images/avactor.jpg" alt="">
+        <Header :headTitle="profiletitle" goBack = 'true'></Header>
+        <router-link  class="user_detail" :to="userInfo? '/user/info': '/login'">
+            <img :src="avactor" class="user_avactor">
             <section class="user_info">
                 <div class="user_login">
-                    <span>登录</span>&nbsp;/
-                    <span>注册</span>
+                    <span>{{username}}</span>
                 </div>
-                <div class="user_tel"><i></i><span>暂无绑定手机号</span></div>
+                <div class="user_tel">
+                    <img src="@/assets/images/tel_logo.png" class="tel_logo">
+                    <span>暂无绑定手机号</span>
+                </div>
             </section>
             <span class="user_link fa fa-angle-right"></span>
-        </div>
+        </router-link>
         <div class="user_data">
             <ul>
                 <li><span class="num"><i class="num_banlance">0.00</i>元</span><span class="description">我的余额</span></li>
@@ -21,15 +23,15 @@
         </div>
         <section class="user_profile">
             <ul>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">我的订单</span><span class="fa fa-angle-right"></span></li>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">积分商城</span><span class="fa fa-angle-right"></span></li>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">饿了吗会员卡</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="images/avactor.jpg" alt="">我的订单</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="images/avactor.jpg" alt="">积分商城</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="images/avactor.jpg" alt="">饿了吗会员卡</span><span class="fa fa-angle-right"></span></li>
             </ul>
         </section>
         <section class="user_profile">
             <ul>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">服务中心</span><span class="fa fa-angle-right"></span></li>
-                <li><span><img src="@/assets/images/avactor.jpg" alt="">下载饿了么APP</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="images/avactor.jpg" alt="">服务中心</span><span class="fa fa-angle-right"></span></li>
+                <li><span><img src="images/avactor.jpg" alt="">下载饿了么APP</span><span class="fa fa-angle-right"></span></li>
             </ul>
         </section>
         <Footer></Footer>
@@ -38,9 +40,42 @@
 </template>
 
 <script>
+import {mapState, mapMutations} from 'vuex'
 import Header from '@/common/header/header'
 import Footer from '@/common/footer/footer'
 export default {
+    data() {
+        return {
+            profiletitle: '我的',
+            username: '登录/注册',           //用户名
+            resetname: '',
+            mobile: '暂无绑定手机号',             //电话号码
+            balance: 0,            //我的余额
+            count : 0,             //优惠券个数
+            pointNumber : 0,       //积分数
+            // imgBaseUrl,
+        }
+    },
+    created() {
+        this.initData()
+        console.log(this.avactor)
+    },
+    computed: {
+        ...mapState(
+            ['userInfo', 'avactor']
+        )
+    },
+    methods: {
+        ...mapMutations(
+            ['']
+        ),
+        initData(){
+            console.log(this.userInfo)
+            if(this.userInfo){
+                this.username = this.userInfo.phoneNumber
+            }
+        }
+    },
     components: {
         Header,
         Footer
@@ -54,7 +89,7 @@ export default {
     display: flex;
     background-color: $blue;
     padding: 45px 20px 20px;
-    img {
+    .user_avactor {
         width: 80px;
         height: 80px;
         border-radius: 40px;
@@ -69,7 +104,13 @@ export default {
         .user_login {
             font-size: 20px;
             font-weight: 600;
-        }   
+        }
+        .user_tel {
+            .tel_logo{
+                width: 20px;
+                vertical-align: middle;
+            }
+        }
     }
     .user_link {
         line-height: 80px;
