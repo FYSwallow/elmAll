@@ -14,6 +14,7 @@ const Address = res => require(['@/components/user/children/children/address'], 
 const Add = res => require(['@/components/user/children/children/children/add'], res)
 const AddDetail = res => require(['@/components/user/children/children/children/children/addDetail'], res)
 const Banlance = res => require(['@/components/banlance/banlance'], res)
+const Login = res => require(['@/components/login/login'], res)
 Vue.use(Router)
 
 export default new Router({
@@ -33,6 +34,7 @@ export default new Router({
         {path: '/user/info/address', component: Address},
         {path: '/user/info/address/add', component: Add},
         {path: '/user/info/address/add/addDetail', component: AddDetail},
+        {path: '/login', component: Login},
     ],
     linkActiveClass: 'active'
 })
