@@ -13,6 +13,7 @@
             <span v-if="false">登录|注册</span>
         </router-link>
         <slot name="changecity"></slot>
+        <slot name=""></slot>
     </header>
 </template>
 
