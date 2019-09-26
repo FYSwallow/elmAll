@@ -65,8 +65,10 @@ export default {
     methods: {
         // 点击搜索
         async searchTarget() {
+            console.log(1)
             this.showHistory = false
             const res = await searchRestaurant(this.geohash, this.searchValue)
+            console.log(res.data)
             this.restaurantList = res.data
             this.emptySearch = !this.restaurantList.length
             // 判断本地存储中是否已经存在这一项,如果存在,则不操作,如果不存在,则添加

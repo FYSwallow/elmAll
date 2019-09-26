@@ -131,4 +131,21 @@ export const accountLogin = (username, password, captcha_code) => ajax('/v2/logi
 export const searchNearby = keyword => ajax('/v1/pois', {
 	type: 'nearby',
 	keyword
-});
+})
+
+/**
+ * 获取shop页面商铺详情
+ */
+
+export const shopDetails = (shopid, latitude, longitude) => ajax('/shopping/restaurant/' + shopid, {
+	latitude,
+	longitude: longitude + '&extras[]=activities&extras[]=album&extras[]=license&extras[]=identification&extras[]=statistics'
+})
+
+/**
+ * 获取shop页面菜单列表
+ */
+
+export const foodMenu = restaurant_id => ajax('/shopping/v2/menu', {
+	restaurant_id
+})

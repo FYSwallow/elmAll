@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul class="shop_list" v-if="shopListArr.length">
-            <li class="shop_list_item" v-for="(item, index) in shopListArr" :key="index">
+            <router-link  class="shop_list_item" v-for="(item, index) in shopListArr" :key="index" :to="{path: '/shop', query:{geohash, id: item.id}}" tag="li">
                 <img :src="imgBaseUrl + item.image_path">
                 <section>
                     <header class="shop_detail">
@@ -36,7 +36,7 @@
                         </div>
                     </div>
                 </section>
-            </li>
+            </router-link>
         </ul>
         <ul v-else class="shop_list">
 			<li class="shop_list_item" v-for="item in 10" :key="item">
