@@ -58,7 +58,7 @@ export default {
             menuList: [], //商铺列表
             selected: 0, //选中项
             foodList: [],
-            imgBaseUrl: 'http://elm.cangdu.org/img/', //图片域名地址
+            imgBaseUrl: 'https://elm.cangdu.org/img/', //图片域名地址
             food: [],
             ballPosition: {ballFlag: false},
             resultfoods: [],

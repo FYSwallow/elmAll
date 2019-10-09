@@ -61,7 +61,7 @@ export default {
         return {
             offset: 0, // 批次加载店铺列表，每次加载20个 limit = 20
             shopListArr:[], // 店铺列表数据
-            imgBaseUrl: 'http://elm.cangdu.org/img/', //
+            imgBaseUrl: 'https://elm.cangdu.org/img/', //
             touchend: false, //没有更多数据
             showLoading: true, //显示加载动画
         }

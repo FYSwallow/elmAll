@@ -1,5 +1,5 @@
 import axios from 'axios'
-let baseUrl = 'http://elm.cangdu.org'
+let baseUrl = 'https://elm.cangdu.org'
 export default async function ajax(url, data={}, type='GET'){
     url = baseUrl + url
     type = type.toUpperCase()
