@@ -48,7 +48,7 @@ export default {
             geohash: '', //地址信息
             searchValue: '', //搜索的内容
             restaurantList: [], // 搜索返回的结果
-            imgBaseUrl: '//elm.cangdu.org/img/', 
+            imgBaseUrl: 'http://elm.cangdu.org/img/', 
             searchHistory: [], //搜索历史记录
             showHistory: true, //是否显示历史记录
             emptySearch: false //搜索结果为空

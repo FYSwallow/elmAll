@@ -44,7 +44,7 @@ import Footer from '@/common/footer/footer'
 export default {
     data() {
         return {
-            imgBaseUrl: '//elm.cangdu.org/img/', //图片域名地址
+            imgBaseUrl: 'http://elm.cangdu.org/img/', //图片域名地址
             count: 0,
             total: 0,
             createdTime: '',//订单创建时间
