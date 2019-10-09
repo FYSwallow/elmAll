@@ -6,7 +6,8 @@ import {
     RETSET_NAME,
     ADD_ADDRESS,
     SAVE_ADDDETAIL,
-    DELECT_ADDRESS
+    DELECT_ADDRESS,
+    SAVE_FOODS
 } from './mutation-types'
 import {getStore, setStore} from '@/api/localStorage'
 export default {
@@ -48,5 +49,9 @@ export default {
     },
     [DELECT_ADDRESS](state, index){
         state.removeAddress.splice(index, 1)
+    },
+    // 添加选中的商品
+    [SAVE_FOODS](state, foods){
+        state.selectedFoods.unshift(foods)
     }
 }

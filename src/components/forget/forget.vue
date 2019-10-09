@@ -1,6 +1,6 @@
 <template>
     <div>
-       <Header></Header>
+       <Header goBack = "true" headTitle="修改密码"></Header>
        <div class="change_detail">
            <section class="user_num">
                <input type="text" placeholder="账号">

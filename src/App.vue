@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div class="inner">
     <router-view></router-view>
   </div>
 </template>
@@ -12,5 +12,8 @@ export default {
 
 <style>
 @import './assets/style/base.css';
-
+.inner {
+  width: 100%;
+  height: 100%;
+}
 </style>

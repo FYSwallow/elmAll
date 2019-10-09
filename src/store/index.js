@@ -11,7 +11,8 @@ const state = {
     login: false,//是否登录
     avactor: 'images/avactor.jpg',
     addAddress: '',//新增地址
-    removeAddress: []
+    removeAddress: [],
+    selectedFoods: [], //选中的食物列表
 }
 
 export default new Vuex.Store({

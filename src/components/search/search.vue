@@ -3,12 +3,12 @@
         <v-header goBack = 'true' headTitle = '搜索'></v-header>
         <div class="search_form">
             <input type="search" placeholder="请输入商家或美食名称" class="input_search" v-model="searchValue" @input="checkInput">
-            <input type="submit" value="提交" class="input_submit" @click="searchTarget">
+            <input type="submit" value="提交" class="input_submit" @click="searchTarget()">
         </div>
         <div class="history" v-show="searchHistory.length&&showHistory">
             <header class="history_title">搜索历史</header>
             <ul>
-                <li v-for="(item, index) in searchHistory" :key="index">
+                <li v-for="(item, index) in searchHistory" :key="index" @click="searchTarget(item)">
                     <span>{{item}}</span>
                     <i @click="deleteHistory">x</i>
                 </li>
@@ -18,7 +18,7 @@
         <div class="searchList" v-if="restaurantList.length">
             <h4>商家</h4>
             <ul>
-                <li v-for="item in restaurantList" :key="item.id">
+                <router-link :to="{path:'/shop', query:{id:item.id}}" v-for="item in restaurantList" :key="item.id" tag="li">
                     <img :src="imgBaseUrl + item.image_path">
                     <section class="shopContainer">
                         <span class="ellipsis logo">{{item.name}}</span>
@@ -28,7 +28,7 @@
                             <span class="distance">距离{{item.distance}}</span>
                         </span>
                     </section>
-                </li>
+                 </router-link>
             </ul>
             
         </div>
@@ -64,8 +64,12 @@ export default {
     },
     methods: {
         // 点击搜索
-        async searchTarget() {
-            console.log(1)
+        async searchTarget(historyValue) {
+            if (historyValue) {
+                this.searchValue = historyValue;
+            }else if (!this.searchValue) {
+                return 
+            }
             this.showHistory = false
             const res = await searchRestaurant(this.geohash, this.searchValue)
             console.log(res.data)

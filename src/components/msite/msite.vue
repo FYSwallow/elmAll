@@ -115,6 +115,9 @@ export default {
 @import '@/assets/style/mixin';
 .msite_title{
     width: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     .title_text{
         width: 100%;
         display: inline-block;

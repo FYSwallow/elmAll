@@ -16,6 +16,7 @@ const AddDetail = res => require(['@/components/user/children/children/children/
 const Banlance = res => require(['@/components/banlance/banlance'], res)
 const Login = res => require(['@/components/login/login'], res)
 const Cart = res => require(['@/common/cartControl/cartControl'], res)
+const ConfirmOrder = res => require(['@/components/confirmOrder/confirmOrder'], res)
 Vue.use(Router)
 
 export default new Router({
@@ -37,6 +38,7 @@ export default new Router({
         {path: '/user/info/address/add/addDetail', component: AddDetail},
         {path: '/login', component: Login},
         {path: '/cart', component: Cart},
+        {path: '/confrimOrder', component: ConfirmOrder}
     ],
     linkActiveClass: 'active'
 })

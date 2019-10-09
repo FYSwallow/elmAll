@@ -14,35 +14,38 @@
 
 <script>
 export default {
-    // props:['food'],
+    props:['food'],
     data() {
         return {
-            food: []
+            // food: []
         }
+    },
+    created() {
+        
     },
     methods: {
         addCart(e){
+            console.log(this.food)
             if(!this.food.count) {
                 this.$set(this.food, 'count', 1)
             }else {
                 this.food.count++
             }
+            console.log(e.clientX)
+            this.$emit('result', this.food)
             this.$emit('func', {
                 posX: e.clientX,
-                posY: e.clientY
+                posY: e.clientY,
+                ballFlag: true
             })
         },
         decreaseCart() {
-            console.log(1)
-
             if(this.food.count === 0) return
             this.food.count--
-            // this.$emit('result', this.food)
+            this.$emit('result', this.food)
         }
 
     },
-    created(){
-    }
 }
 </script>
 

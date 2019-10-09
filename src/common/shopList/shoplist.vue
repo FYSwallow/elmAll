@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul class="shop_list" v-if="shopListArr.length">
-            <router-link  class="shop_list_item" v-for="(item, index) in shopListArr" :key="index" :to="{path: '/shop', query:{geohash, id: item.id}}" tag="li">
+            <router-link  class="shop_list_item" v-for="(item, index) in shopListArr" :key="index" :to="{path: '/shop', query:{geohash, id: item.id, name: item.name}}" tag="li">
                 <img :src="imgBaseUrl + item.image_path">
                 <section>
                     <header class="shop_detail">
@@ -70,7 +70,7 @@ export default {
         this.initData()
     },
     mounted() {
-        document.body.addEventListener('scroll', this.loadMore)
+        window.addEventListener('scroll', this.loadMore)
     },
     computed: {
         ...mapState([

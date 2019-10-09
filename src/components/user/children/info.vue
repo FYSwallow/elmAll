@@ -36,7 +36,7 @@
             <div class="user_info_head">
                 账号绑定
             </div>
-            <router-link  class="user_info_item" to="/forget/forget" tag="div">
+            <router-link  class="user_info_item" to="/forget" tag="div">
                 <h3 class="item_head">登录密码</h3>
                 <div class="item_detail">
                     <p>修改<span class="fa fa-angle-right"></span></p>

@@ -9,6 +9,7 @@
                 <ul>
                     <li v-for="(item, index) in menuList" :key="index" :class="{'active': selected === index}" class="ellipsis" @click="chooseSelected(index)">
                         {{item.name}}
+                        <div class="num"></div>
                     </li>
                 </ul>
             </aside>
@@ -29,14 +30,17 @@
                                 <span>20 元</span>
                             </div>
                             <div class="shopChoose">
-                                <cartControl @func='position'></cartControl>
+                                <cartControl @func='position' :food='item' @result="resultFoods"></cartControl>
                             </div>
                         </section>
                     </li>
                 </ul>
             </section>
         </section> 
-        <ShopCart :pos="ballPosition"></ShopCart>
+        <ShopCart :pos="ballPosition" :selectFood="resultfoods"></ShopCart>
+        <transition name="loading">
+            <loading v-show="showLoading"></loading>
+        </transition>
     </div>
 </template>
 
@@ -45,6 +49,7 @@ import {mapState} from 'vuex'
 import {shopDetails, foodMenu} from '@/api/index'
 import ShopCart from '@/common/shopcart/shopcart'
 import cartControl from '@/common/cartControl/cartControl'
+import Loading from '@/common/loading/loading'
 export default {
     data() {
         return {
@@ -55,7 +60,9 @@ export default {
             foodList: [],
             imgBaseUrl: '//elm.cangdu.org/img/', //图片域名地址
             food: [],
-            ballPosition: {}
+            ballPosition: {ballFlag: false},
+            resultfoods: [],
+            showLoading: true, //显示加载动画
         }
     },
     created() {
@@ -72,25 +79,42 @@ export default {
         async initData() {
             // const res = await shopDetails(this.shopId, this.latitude, this.longitude)
             const resMenuList = await foodMenu(this.shopId)
+            this.showLoading = false
             this.menuList = resMenuList.data
             this.foodList = this.menuList[this.selected]
-            console.log(this.foodList)
         },
         chooseSelected(index){
             this.selected = index
             this.foodList = this.menuList[this.selected]
-            console.log(this.foodList)
-
+        },
+        resultFoods(foods) {
+            let flag = true
+            if(this.resultfoods.length){
+                this.resultfoods.forEach((item,i) => {
+                    //如果食物名字相同,则只改变数量
+                    if(item.name === foods.name) {
+                        this.resultfoods.splice(i,1)
+                        this.resultfoods.push(foods)
+                        flag = false
+                        return
+                    }
+                })
+                if(flag){
+                    this.resultfoods.push(foods)
+                }
+            }else {
+                this.resultfoods.push(foods)
+            }
+            
         },
         position(obj){
-            console.log(1)
-            this.ballPosition = obj
-            console.log(this.ballPosition)
+            this.ballPosition = Object.assign({}, this.ballPosition, obj)
         }
     },
     components: {
         ShopCart,
-        cartControl
+        cartControl,
+        Loading
     }
 }
 </script>
@@ -100,6 +124,7 @@ export default {
 #food {
     display: flex;
     flex-direction: column;
+    height: 100%;
     .head_nav {
         @include fj;
         text-align: center;
@@ -123,10 +148,14 @@ export default {
     .food {
         @include fj;
         flex: 1;
+        height: 100%;
+        overflow: hidden;
+        padding-bottom: 50px;
         .tab_nav{
+            width: 25%;
             ul {
-                width: 100px;
-                height: 617px;
+                width: 100%;
+                height: 100%;
                 overflow-y: auto;
                 li {
                     width: 100px;
@@ -145,11 +174,12 @@ export default {
             }
         }
         .food_container {
-            flex: 1;
+            width: 75%;
             background-color: #fff;
+            overflow: hidden;
             ul {
-                height: 617px;
                 width: 100%;
+                height: 100%;
                 overflow-y: auto;
                 li {
                     padding: 10px;
@@ -223,7 +253,7 @@ export default {
                         .shopChoose {
                             position: absolute;
                             bottom: 10px;
-                            left: 120px;
+                            right: 10px;
                             width: 100px;
                         }
                     }
@@ -231,5 +261,11 @@ export default {
             }   
         }
     }
+}
+.loading-enter-active, .loading-leave-active {
+    transition: opacity .7s
+}
+.loading-enter, .loading-leave-active {
+    opacity: 0
 }
 </style>

@@ -6,4 +6,4 @@ export const RETSET_NAME = 'RETSET_NAME'
 export const ADD_ADDRESS = 'ADD_ADDRESS'
 export const SAVE_ADDDETAIL = 'SAVE_ADDDETAIL'
 export const DELECT_ADDRESS = 'DELECT_ADDRESS'
-
+export const SAVE_FOODS = 'SAVE_FOODS'

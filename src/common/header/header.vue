@@ -9,9 +9,9 @@
             <span class="ellipsis">{{headTitle}}</span>
         </section>
         <slot name="msite-title"></slot>
-        <router-link to="/home" tag="span" v-if="signinUp">
-            <span class="fa fa-user-circle"></span>
-            <span v-if="false">登录|注册</span>
+        <router-link :to="userInfo? '/user':'/login'" tag="span" v-if="signinUp">
+            <span class="fa fa-user-circle" v-if="userInfo"></span>
+            <span v-else>登录|注册</span>
         </router-link>
         <slot name="changecity"></slot>
         <slot name="edit"></slot>
@@ -20,8 +20,14 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
-    props: ['goBack', 'headTitle', 'signinUp']
+    props: ['goBack', 'headTitle', 'signinUp'],
+    computed: {
+        ...mapState(
+            ['userInfo']
+        )
+    },
 }
 </script>
 

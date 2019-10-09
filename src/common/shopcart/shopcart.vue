@@ -1,54 +1,52 @@
 <template>
     <div>
         <div class="shopCart">
-            <div class="content" >
+            <div class="content" @click.stop="toggleList()">
                 <div class="content-left">
                     <div class="logo-wrapper"  ref="num">
-                        <div class="logo" :class="{'highlight': true}">
-                            <i class="fa fa-shopping-cart" :class="{'highlight': true}"></i>
+                        <div class="logo" :class="{'highlight': totalCount > 0}">
+                            <i class="fa fa-cart-plus" :class="{'highlight': totalCount > 0}"></i>
                         </div>
-                        <div class="num"  v-show="true">1</div>
+                        <div class="num"  v-show="totalCount > 0">{{totalCount}}</div>
                     </div>
-                    <div class="price" :class="{'highlight': true}">￥10</div>
-                    <div class="desc">另需配送费￥10元</div>
+                    <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div>
+                    <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
                 </div>
                 <div class="content-right">
-                    <div class="pay" >
-                        <div v-if="true">10元起送</div>
-                        <div v-if="true">还差￥20元起送</div>
-                        <div v-if="true">去结算</div>
+                    <div class="pay" :class="payClass">
+                        <div v-if="totalPrice === 0">{{minPrice}}元起送</div>
+                        <div v-if="totalPrice < minPrice">还差￥{{slowCount}}元起送</div>
+                        <div v-if="totalPrice >= minPrice" @click.stop="goPay">添加订单</div>
                     </div>
-                </div>
-                <div class="ball-container">
-                    <!-- <transition
-                        @before-enter="beforeEnter"
-                        @enter="enter"
-                        @after-enter="afterEnter"> -->
-                        <div class="ball" v-show="flag" ref="ball">
-                            <div class="inner inner-hook"></div>
-                        </div>
-                    <!-- </transition> -->
                 </div>
             </div>
             <transition name="fade">
-                <div class="shopcart-list">
+                <div class="shopcart-list" v-show="listShow">
                     <div class="list-header">
                         <h1 class="title">购物车</h1>
-                        <span class="empty" >清空</span>
+                        <span class="empty" @click="empty">清空</span>
                     </div>
                     <div class="list-content">
                         <ul>
-                            <!-- <li class="shopcart-food"  v-for="index in 10" :key="index" v-show="true">
-                                <span class="name">10</span>
-                                <div class="price">￥20</div>
+                            <li class="shopcart-food"  v-for="(food, index) in selectFood" :key="index" v-show="food.count !== 0">
+                                <div class="name">{{food.name}}</div>
+                                <div class="price">￥{{20 * food.count}}</div>
                                 <div class="cartControl-wrapper">
-                                    <div class="cartControl">
-                                        <cartControl :food='food'></cartControl>
-                                    </div>
+                                    <cartControl :food="food"></cartControl>
                                 </div>
-                            </li> -->
+                            </li>
                         </ul>
                     </div>
+                </div>
+            </transition>
+        </div>
+        <div class="ball-container">
+            <transition
+                @before-enter="beforeEnter"
+                @enter="enter"
+                @after-enter="afterEnter">
+                <div class="ball" v-show="pos.ballFlag" ref="ball">
+                    <div class="inner inner-hook"></div>
                 </div>
             </transition>
         </div>
@@ -56,81 +54,88 @@
 </template>
 <script>
 import cartControl from '@/common/cartControl/cartControl'
+import setStore from '@/api/localStorage'
+import { mapMutations } from 'vuex'
 export default {
-    // props:['selectFood', 'deliveryPrice', 'minPrice', 'pos'],
-    props: ['pos'],
+    props:['selectFood', 'pos'],
     data(){
         return{
-            food: [
-                {name: '123', count: 123}
-            ],
-            flag: false
+            deliveryPrice: 5, //配送费
+            minPrice: 20, //起步价
+            fold: true
         }
     },
     created() {
-        console.log(this.pos)
+        console.log(this.selectFood)
     },
-    computed: {
-        pos(){
-            this.flag = true
+    computed:{
+        totalPrice(){
+            let total = 0
+            this.selectFood.forEach(food => {
+                total += 20 * food.count
+            })
+            console.log(total)
+            return total
+        },
+        totalCount(){
+            let count = 0
+            this.selectFood.forEach(food => {
+                count += food.count
+            })
+            
+            return count
+        },
+        slowCount() {
+            return this.totalPrice -this.totalCount
+        },
+        payClass() {
+            if (this.totalPrice < this.minPrice) {
+                return 'not-enough';
+            } else {
+                return 'enough';
+            }
+        },
+        listShow() {
+            if(!this.totalCount){
+                return false;  
+            }
+            let show = !this.fold;
+            return show
         }
     },
-    // computed:{
-    //     totalPrice(){
-    //         let total = 0;
-    //         this.selectFood.forEach(food => {
-    //             total += food.price * food.count
-    //         })
-    //         return total
-    //     },
-    //     totalCount(){
-    //         let count = 0
-    //         this.selectFood.forEach(food => {
-    //             count += food.count
-    //         })
-    //         return count
-    //     },
-    //     slowCount() {
-    //         return this.totalPrice -this.totalCount
-    //     },
-    //     payClass() {
-    //         if (this.totalPrice < this.minPrice) {
-    //             return 'not-enough';
-    //         } else {
-    //             return 'enough';
-    //         }
-    //     },
-    //     listShow() {
-    //         console.log(!this.totalCount)
-    //         if(!this.totalCount){
-    //             return false;  
-    //         }
-    //         let show = !this.fold;
-    //         return show
-    //     }
-    // },
     methods:{
+        ...mapMutations(
+            ['SAVE_FOODS']
+        ),
         toggleList(){
             if(!this.totalCount) {
                 return
             }
-            this.fold = ! this.fold
+            this.fold = !this.fold
         },
         empty() {
             this.selectFood.forEach((food) => {
                 food.count = 0;
             });
         },
+        goPay(){
+            var date = new Date()
+            this.$set(this.selectFood, 'date', date)
+            this.$set(this.selectFood, 'name', this.$route.query.name)
+            this.SAVE_FOODS(this.selectFood)
+            this.$router.push('/confrimOrder')
+        },
         beforeEnter(el) {
             // 获取小球的 在页面中的位置
             el.style.left = this.pos.posX +'px'
             el.style.top = this.pos.posY+ 'px'
-            el.style.transform = "translate(0, 0)"
-            
+            el.style.transform = "translate(0, 0)" 
+            console.log(1)   
         },
         enter(el, done) {
             el.offsetWidth
             const ballPosition = this.$refs.num.getBoundingClientRect()
+            console.log(ballPosition)
             const xDist = this.pos.posX - ballPosition.left;
             const yDist = this.pos.posY - ballPosition.top;
             el.style.transform = `translate(${-xDist}px, ${-yDist}px)`;
@@ -139,9 +144,6 @@ export default {
         },
         afterEnter(el) {
             this.pos.ballFlag = !this.pos.ballFlag;
-        },
-        pay(){
-            window.alert(this.totalPrice)
         }
     },
     components:{
@@ -255,19 +257,6 @@ export default {
             }
         }
     }
-    .ball-container {
-        .ball {
-            position: fixed;
-            z-index: 200;
-            //transition: all 0.6s cubic-bezier(0.49, -0.29, 0.75, 0.41)
-            .inner {
-                width: 16px;
-                height: 16px;
-                border-radius: 50%;
-                background-color: rgb(0, 160, 220);
-            }
-        }
-    }
     .shopcart-list {
         position: absolute;
         top: 0;
@@ -275,9 +264,9 @@ export default {
         z-index: -1;
         width: 100%;
         transform: translateY(-100%);
-        &.fade-enter-active,&.fade-leave-active{
+        &.fade-enter-active, &.fade-leave-active{
             transition: all 0.5s;
-            transform: translateY(-100%)
+            transform: translateY(-100%);
         }
         &.fade-enter, &.fade-leave-active {
             transform: translateY(0)
@@ -308,16 +297,19 @@ export default {
                 padding: 12px 0;
                 box-sizing: border-box;
                 border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+                position: relative;
                 .name {
-                    line-height: 24px;
+                    float: left;
                     font-size: 14px;
+                    line-height: 36px;
                     color: rgb(7, 17, 27);
                 }
                 .price {
+                    float: right;
                     position: absolute;
                     right: 90px;
                     bottom: 12px;
-                    line-height: 24px;
+                    line-height: 36px;
                     font-size: 14px;
                     font-weight: 700;
                     color: rgb(240, 20, 20);
@@ -333,6 +325,20 @@ export default {
                     
                 }
             }
+        }
+    }
+}
+.ball-container { 
+    .ball {
+        position: fixed;
+        z-index: 200;
+        
+        //transition: all 0.6s cubic-bezier(0.49, -0.29, 0.75, 0.41)
+        .inner {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: rgb(0, 160, 220);
         }
     }
 }
