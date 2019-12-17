@@ -108,7 +108,7 @@
             </transition>      
         </div>
         <div class="shoplist">
-            <v-shopList :geohash="geohash" :restaurantCategoryId="restaurant_category_id" :restaurantCategoryIds="restaurant_category_ids" :sortByType='sortByType' :deliveryMode="delivery_mode" :confirmSelect="confirmStatus" :supportIds="support_ids" v-if="latitude"></v-shopList>
+            <v-shoplist :geohash="geohash" :restaurantCategoryId="restaurant_category_id" :restaurantCategoryIds="restaurant_category_ids" :sortByType='sortByType' :deliveryMode="delivery_mode" :confirmSelect="confirmStatus" :supportIds="support_ids" v-if="latitude"></v-shopList>
         </div>
         <transition name="showCover">
             <div class="back_cover" v-show="sortBy"></div>
@@ -119,8 +119,8 @@
 
 <script>
 import {mapState, mapMutations} from 'vuex'
-import Header from '@/common/header/header'
-import ShopList from '@/common/shopList/shoplist'
+import vHeader from '@/common/header/header'
+import vShoplist from '@/common/shopList/shoplist'
 import {
     foodCategory,
     foodDelivery,
@@ -164,23 +164,19 @@ export default {
             // 获取分类列表右侧数据
             const resCategory = await foodCategory(this.latitude, this.longitude)
             this.category = resCategory.data
-            console.log(this.category)
             this.category.forEach(item => {
                 if(this.restaurant_category_id === item.id) {
                     this.categoryDetail = item.sub_categories
                 }
             })
-            console.log(this.restaurant_category_id)
 
             // 获取配送列表
             const resDelivery = await foodDelivery(this.latitude, this.longitude)
             this.Delivery = resDelivery.data
-            console.log(this.Delivery)
 
             // 获取筛选列表
             const resActivity = await foodActivity(this.latitude, this.longitude)
             this.Activity = resActivity.data
-            console.log(this.Activity)
             // 为商家活动选择状态属性,初始值为false
             this.Activity.forEach((item, index) => {
                 this.support_ids[index] = {
@@ -224,11 +220,8 @@ export default {
         },
         // 根据事件委托的方法去优化项目性能,为父级元素绑定事件
         sortList(e) {
-            console.log(e.target.nodeName.toLowerCase())
             if (e.target.nodeName.toUpperCase() === 'P') {
-                console.log(1)
                 this.sortByType = e.target.parentNode.getAttribute("data");
-                console.log(this.sortByType)
                 this.sortBy = "";
             }
         },
@@ -246,7 +239,6 @@ export default {
         },
         // 点击商家活动,状态取反
         selectSupportIds(index, id){
-            console.log(1)
             this.support_ids.splice(index, 1, {
                 status: !this.support_ids[index].status,
                 id
@@ -285,8 +277,8 @@ export default {
 		},
     },
     components: {
-        'v-header': Header,
-        'v-shopList': ShopList
+        vHeader,
+        vShoplist
     }  
 }
 </script>
@@ -294,19 +286,17 @@ export default {
 <style lang="scss" scoped> 
 @import '@/assets/style/mixin';
 .food {
-    width: 100%;
-    height: 100%;
+    @include wh(100%, 100%);
     .food_container {
-        padding-top: 45px;
         position: fixed;
         z-index: 11;
+        padding-top: 45px;
         .sort_container {
-            width: 100%;
-            height: 50px;
-            display: flex;
+            position: fixed;display: flex;
             align-items: center;
+            @include wh(100%, 50px);
+            
             text-align: center;
-            position: fixed;
             top: 45px;
             background-color: #fff;
             border-bottom: 1px solid #f1f1f1;

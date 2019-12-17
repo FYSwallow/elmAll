@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <v-header signinUp='home'>
+        <v-header signinUp="home">
             <span slot="logo" @click="reload">elm</span>
         </v-header>
         <div class="currentCity">
@@ -9,115 +9,132 @@
                 <span>定位不准时,请在城市列表中选择</span>
             </div>
             <router-link class="guess_city" :to="'/city/' +  guessCityid">
-                <a href="">{{guessCity}}</a>
+                <a href>{{guessCity}}</a>
                 <i class="fa fa-angle-right"></i>
             </router-link>
         </div>
         <div class="hot_city">
             <h3 class="hot_city_title">热门城市</h3>
             <ul class="hot_city_list clear">
-                <router-link v-for="(item, index) in hotCity" :key="index" :to="'/city/'+ item.id" tag="li" class="ellipsis">{{item.name}}</router-link>
+                <router-link
+                    v-for="(item, index) in hotCity"
+                    :key="index"
+                    :to="'/city/'+ item.id"
+                    tag="li"
+                    class="ellipsis"
+                >{{item.name}}</router-link>
             </ul>
         </div>
         <div class="letter_city">
             <ul class="letter_city_category">
-                <li class="letter_city_category_list " v-for="(value, key, index) in sortgroupCity" :key="index">
-                    <h3 class="letter_city_category_list_title">{{key}}<span v-if="index === 0">(按字母排序)</span></h3>
+                <li
+                    class="letter_city_category_list"
+                    v-for="(value, key, index) in sortgroupCity"
+                    :key="index"
+                >
+                    <h3 class="letter_city_category_list_title">
+                        {{key}}
+                        <span v-if="index === 0">(按字母排序)</span>
+                    </h3>
                     <ul class="letter_city_category_list_item clear">
-                        <router-link tag="li" :to="'/city/' + item.id" v-for="(item, i) in value" :key="i" class="ellipsis">{{item.name}}</router-link>
-                    </ul>  
+                        <router-link
+                            tag="li"
+                            :to="'/city/' + item.id"
+                            v-for="(item, i) in value"
+                            :key="i"
+                            class="ellipsis"
+                        >{{item.name}}</router-link>
+                    </ul>
                 </li>
             </ul>
-            
         </div>
     </div>
 </template>
 
 <script>
-import Header from '@/common/header/header'
-import {cityGuess, hotcity, groupcity} from '@/api/index.js'
+import vHeader from "@/common/header/header";
+import { cityGuess, hotcity, groupcity } from "@/api/index.js";
 export default {
     data() {
         return {
-            guessCity: '',   //当前城市
-            guessCityid: '', //当前城市id
-            hotCity: [],     //热门城市列表
-            groupCity: {},   //所有城市列表
-        }
+            guessCity: "", //当前城市
+            guessCityid: "", //当前城市id
+            hotCity: [], //热门城市列表
+            groupCity: [] //所有城市列表
+        };
     },
     components: {
-        'v-header': Header
+        vHeader
     },
-    created() {
-        cityGuess().then(res => {
-            this.guessCity = res.data.name
-            this.guessCityid = res.data.id
-        })
-        //获取热门城市
-        hotcity().then(res => {
-            console.log(res.data)
-            this.hotCity = res.data;
-            console.log(this.hotCity)
-        })
-        //获取所有城市
-        groupcity().then(res => {
-            this.groupCity = res.data;
-            console.log(this.groupCity)
-        })
+    mounted() {
+        this.initData();
     },
     computed: {
         sortgroupCity() {
-            let sortObj = {}
-            for(let i= 65; i <= 90; i++){
+            let sortObj = {};
+            for (let i = 65; i <= 90; i++) {
                 // fromCharCode该方法是 String 的静态方法，字符串中的每个字符都由单独的 Unicode 数字编码指定
-                if(this.groupCity[String.fromCharCode(i)]) {
-                    sortObj[String.fromCharCode(i)] = this.groupCity[String.fromCharCode(i)]
+                if (this.groupCity[String.fromCharCode(i)]) {
+                    sortObj[String.fromCharCode(i)] = this.groupCity[
+                        String.fromCharCode(i)
+                    ];
                 }
             }
-            console.log(sortObj)
-            return sortObj
+            return sortObj;
         }
     },
     methods: {
         // 页面初始化数据
-        initData() {
-            
+        async initData() {
+            //获取当前城市所在地
+            const cityGuessResult = await cityGuess();
+            this.guessCity = cityGuessResult.data.name;
+            this.guessCityid = cityGuessResult.data.id;
+
+            //获取热门城市
+            const hotcityResult = await hotcity();
+            this.hotCity = hotcityResult.data;
+
+            //获取所有城市
+            const groupCityResult = await groupcity();
+            this.groupCity = groupCityResult.data;
         },
         reload() {
-            window.location.reload()
+            window.location.reload();
         }
     }
-}
+};
 </script>
 
 <style lang="scss">
-@import '@/assets/style/mixin';
+@import "@/assets/style/mixin";
 .home {
-    .currentCity{
-        padding-top: 65px;
-        background-color: #fff;
+    .currentCity {
+        padding-top: 50px;
         margin-bottom: 10px;
+        background-color: #fff;
         .currentCity_choose {
-            padding: 0 10px 10px;
-            border-bottom:1px solid #ccc;
             @include fj;
-            line-height: 20px;
-            span:nth-of-type(1){
+            height: 40px;
+            padding: 0 10px;
+            border-bottom: 1px solid #ccc;
+            line-height: 40px;
+            span:nth-of-type(1) {
                 @include sc(14px, #666);
             }
-            span:nth-of-type(2){
-                font-weight: 900;
+            span:nth-of-type(2) {
+                font-weight: 700;
                 @include sc(14px, #9f9f9f);
             }
         }
         .guess_city {
             @include fj;
             height: 40px;
-            border-bottom:1px solid #ccc;
-            padding: 10px 10px;
-            line-height: 20px;
+            border-bottom: 1px solid #ccc;
+            padding: 0 10px;
+            line-height: 40px;
             a {
-               @include sc(20px, $blue);
+                @include sc(20px, $blue);
             }
             i.fa-angle-right:before {
                 @include sc(20px, #666);
@@ -126,23 +143,19 @@ export default {
         }
     }
     .hot_city {
-        background-color: #fff;
         border-top: 1px solid #ccc;
         border-bottom: 1px solid #ccc;
         margin-bottom: 10px;
+        background-color: #fff;
         .hot_city_title {
-            color: #666;
-            font-weight: normal;
             padding: 10px;
             border-bottom: 1px solid #ccc;
-            font-size: 16px;
+            color: #666;
         }
         .hot_city_list {
             li {
-                @include wh(25%, 28px);
-                @include font(14px, 28px);
-                height: 40px;
-                line-height: 40px;
+                @include wh(25%, 40px);
+                @include font(14px, 40px);
                 float: left;
                 text-align: center;
                 color: $blue;
@@ -157,29 +170,29 @@ export default {
     .letter_city {
         .letter_city_category {
             .letter_city_category_list {
-                background-color: #fff;
                 margin-bottom: 10px;
+                background-color: #fff;
+                &:last-child {
+                    margin-bottom: 0;
+                }
                 .letter_city_category_list_title {
                     color: #666;
-                    font-weight: normal;
                     padding: 10px;
                     border-bottom: 1px solid #ccc;
                     font-size: 16px;
                     span {
                         margin-left: 10px;
                         font-size: 14px;
-                        color: #ccc
+                        color: #ccc;
                     }
                 }
                 ul {
                     li {
-                        @include wh(25%, 28px);
-                        @include font(14px, 28px);
-                        height: 40px;
-                        line-height: 40px;
+                        @include wh(25%, 40px);
+                        @include font(14px, 40px);
                         float: left;
                         text-align: center;
-                        color: #666;;
+                        color: #666;
                         border-right: 1px solid $bc;
                         border-bottom: 1px solid $bc;
                         padding: 0 10px;

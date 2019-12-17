@@ -1,64 +1,84 @@
 <template>
     <div class="cartControl-wrapper">
-        <transition name='fade'>
-            <div class="cart-decrease" v-show="food.count && food.count !== 0" @click.prevent="decreaseCart">
+        <transition name="fade">
+            <div
+                class="cart-decrease"
+                v-show="food.count && food.count !== 0"
+                @click.prevent="decreaseCart"
+            >
                 <transition name="inner">
-                    <span class="inner ">-</span>
+                    <span class="inner">-</span>
                 </transition>
             </div>
         </transition>
         <span class="cart-count" v-show="food.count !== 0">{{food.count}}</span>
         <span class="cart-add" @click.prevent="addCart">+</span>
+        <v-alertTip v-show="showTip" alertText='请先登录' @closeTip="goLogin"></v-alertTip>
     </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+import vAlertTip from "@/common/alertTip/alertTip.vue";
 export default {
-    props:['food'],
+    props: ["food"],
     data() {
         return {
-            // food: []
-        }
+            showTip: false //是否显示提示框
+        };
     },
-    created() {
-        
+    computed: {
+        ...mapState(["userInfo"])
     },
     methods: {
-        addCart(e){
-            console.log(this.food)
-            if(!this.food.count) {
-                this.$set(this.food, 'count', 1)
-            }else {
-                this.food.count++
+        // 添加商品数量
+        addCart(e) {
+            if (!this.userInfo) {
+                this.showTip = true;
+            } else {
+                if (!this.food.count) {
+                    this.$set(this.food, "count", 1);
+                } else {
+                    this.food.count++;
+                }
+                this.$emit("result", this.food);
+                this.$emit("func", {
+                    posX: e.clientX,
+                    posY: e.clientY,
+                    ballFlag: true
+                });
             }
-            console.log(e.clientX)
-            this.$emit('result', this.food)
-            this.$emit('func', {
-                posX: e.clientX,
-                posY: e.clientY,
-                ballFlag: true
-            })
         },
+        // 删减商品
         decreaseCart() {
-            if(this.food.count === 0) return
-            this.food.count--
-            this.$emit('result', this.food)
+            if (this.food.count === 0) return;
+            this.food.count--;
+            this.$emit("result", this.food);
+        },
+        //前去登录
+        goLogin() {
+            this.$router.push('/login')
         }
-
     },
-}
+    components: {
+        vAlertTip
+    }
+};
 </script>
 
 <style lang="scss">
 .cartControl-wrapper {
     text-align: right;
-    .cart-decrease, .cart-add {
+    .cart-decrease,
+    .cart-add {
         display: inline-block;
         padding: 4px 6px 6px 6px;
-        &.fade-enter-active, &.fade-leave-active {
+        &.fade-enter-active,
+        &.fade-leave-active {
             transition: all 0.4s linear;
         }
-        &.fade-enter, &.fade-leave-active{
+        &.fade-enter,
+        &.fade-leave-active {
             opacity: 0;
             transform: translateX(24px);
         }
@@ -69,7 +89,6 @@ export default {
             vertical-align: top;
             color: rgb(0, 160, 220);
         }
-        
     }
     .cart-count {
         display: inline-block;
@@ -87,7 +106,7 @@ export default {
         line-height: 24px;
         font-size: 24px;
         vertical-align: top;
-        color: rgb(0, 160, 220)
+        color: rgb(0, 160, 220);
     }
-}   
+}
 </style>

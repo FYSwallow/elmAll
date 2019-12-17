@@ -3,11 +3,11 @@
         <div class="shopCart">
             <div class="content" @click.stop="toggleList()">
                 <div class="content-left">
-                    <div class="logo-wrapper"  ref="num">
+                    <div class="logo-wrapper" ref="num">
                         <div class="logo" :class="{'highlight': totalCount > 0}">
-                            <i class="fa fa-cart-plus" :class="{'highlight': totalCount > 0}"></i>
+                            <i class="fa fa-shopping-cart" :class="{'highlight': totalCount > 0}"></i>
                         </div>
-                        <div class="num"  v-show="totalCount > 0">{{totalCount}}</div>
+                        <div class="num" v-show="totalCount > 0">{{totalCount}}</div>
                     </div>
                     <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div>
                     <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
@@ -28,7 +28,12 @@
                     </div>
                     <div class="list-content">
                         <ul>
-                            <li class="shopcart-food"  v-for="(food, index) in selectFood" :key="index" v-show="food.count !== 0">
+                            <li
+                                class="shopcart-food"
+                                v-for="(food, index) in selectFood"
+                                :key="index"
+                                v-show="food.count !== 0"
+                            >
                                 <div class="name">{{food.name}}</div>
                                 <div class="price">￥{{20 * food.count}}</div>
                                 <div class="cartControl-wrapper">
@@ -41,10 +46,7 @@
             </transition>
         </div>
         <div class="ball-container">
-            <transition
-                @before-enter="beforeEnter"
-                @enter="enter"
-                @after-enter="afterEnter">
+            <transition @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
                 <div class="ball" v-show="pos.ballFlag" ref="ball">
                     <div class="inner inner-hook"></div>
                 </div>
@@ -53,112 +55,109 @@
     </div>
 </template>
 <script>
-import cartControl from '@/common/cartControl/cartControl'
-import setStore from '@/api/localStorage'
-import { mapMutations } from 'vuex'
+import cartControl from "@/common/cartControl/cartControl";
+import { mapMutations } from "vuex";
 export default {
-    props:['selectFood', 'pos'],
-    data(){
-        return{
+    props: ["selectFood", "pos"],
+    data() {
+        return {
             deliveryPrice: 5, //配送费
-            minPrice: 20, //起步价
+            minPrice: 30, //起步价
             fold: true
-        }
+        };
     },
-    created() {
-        console.log(this.selectFood)
-    },
-    computed:{
-        totalPrice(){
-            let total = 0
+    computed: {
+        totalPrice() {
+            let total = 0;
             this.selectFood.forEach(food => {
-                total += 20 * food.count
-            })
-            console.log(total)
-            return total
+                total += 20 * food.count;
+            });
+            return total;
         },
-        totalCount(){
-            let count = 0
+        totalCount() {
+            let count = 0;
             this.selectFood.forEach(food => {
-                count += food.count
-            })
-            
-            return count
+                count += food.count;
+            });
+
+            return count;
         },
         slowCount() {
-            return this.totalPrice -this.totalCount
+            return this.minPrice - this.totalPrice;
         },
         payClass() {
             if (this.totalPrice < this.minPrice) {
-                return 'not-enough';
+                return "not-enough";
             } else {
-                return 'enough';
+                return "enough";
             }
         },
         listShow() {
-            if(!this.totalCount){
-                return false;  
+            if (!this.totalCount) {
+                return false;
             }
             let show = !this.fold;
-            return show
+            return show;
         }
     },
-    methods:{
-        ...mapMutations(
-            ['SAVE_FOODS']
-        ),
-        toggleList(){
-            if(!this.totalCount) {
-                return
+    methods: {
+        ...mapMutations(["SAVE_FOODS"]),
+        toggleList() {
+            if (!this.totalCount) {
+                return;
             }
-            this.fold = !this.fold
+            this.fold = !this.fold;
         },
         empty() {
-            this.selectFood.forEach((food) => {
+            this.selectFood.forEach(food => {
                 food.count = 0;
             });
         },
-        goPay(){
-            var date = new Date()
-            this.$set(this.selectFood, 'date', date)
-            this.$set(this.selectFood, 'name', this.$route.query.name)
-            this.SAVE_FOODS(this.selectFood)
-            this.$router.push('/confrimOrder')
+        goPay() {
+            // 将一个订单所拥有的数量和价钱保存为一个对象,存储到订单列表的最后一位
+            var date = new Date();
+            const atrObj = {
+                date,
+                name: this.$route.query.name,
+                totalCount: this.totalCount,
+                totalPrice: this.totalPrice,
+                foods: this.selectFood
+            };
+            this.SAVE_FOODS(atrObj);
+            this.$router.push("/confrimOrder");
         },
         beforeEnter(el) {
             // 获取小球的 在页面中的位置
-            el.style.left = this.pos.posX +'px'
-            el.style.top = this.pos.posY+ 'px'
-            el.style.transform = "translate(0, 0)" 
-            console.log(1)   
+            el.style.left = this.pos.posX + "px";
+            el.style.top = this.pos.posY + "px";
+            el.style.transform = "translate(0, 0)";
         },
+        //小球动画
         enter(el, done) {
-            el.offsetWidth
-            const ballPosition = this.$refs.num.getBoundingClientRect()
-            console.log(ballPosition)
+            const ballPosition = this.$refs.num.getBoundingClientRect();
             const xDist = this.pos.posX - ballPosition.left;
             const yDist = this.pos.posY - ballPosition.top;
             el.style.transform = `translate(${-xDist}px, ${-yDist}px)`;
             el.style.transition = "all 0.5s cubic-bezier(.4,-0.3,1,.68)";
             done();
         },
-        afterEnter(el) {
+        afterEnter() {
             this.pos.ballFlag = !this.pos.ballFlag;
         }
     },
-    components:{
+    components: {
         cartControl
     }
-}
+};
 </script>
 <style lang="scss">
+@import "@/assets/style/mixin";
 .shopCart {
     position: fixed;
     left: 0;
     bottom: 0;
     z-index: 50;
-    width: 100%;
-    height: 48px;
+    @include wh(100%, 48px);
     .content {
         display: flex;
         background: #141d27;
@@ -168,11 +167,9 @@ export default {
                 display: inline-block;
                 position: relative;
                 top: -10px;
+                @include wh(56px, 56px);
                 margin: 0 12px;
                 padding: 6px;
-                width: 56px;
-                height: 56px;
-                box-sizing: border-box;
                 vertical-align: top;
                 border-radius: 50%;
                 background: #141d27;
@@ -180,79 +177,69 @@ export default {
                     position: absolute;
                     top: 0;
                     right: 0;
-                    width: 24px;
-                    height: 24px;
-                    line-height: 24px;
-                    text-align: center;
+                    @include wh(24px, 24px);
                     border-radius: 16px;
-                    font-size: 9px;
+                    @include font(12px, 24px);
+                    text-align: center;
                     font-weight: 700;
-                    color:#fff;
-                    background: rgb(240, 20 ,20);
+                    color: #fff;
+                    background: rgb(240, 20, 20);
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
                 }
-                .logo{
-                    width: 100%;
-                    height: 100%;
-                    text-align: center;
+                .logo {
+                    @include wh(100%, 100%);
                     border-radius: 50%;
+                    text-align: center;
                     background: #2b343c;
                     &.highlight {
-                        background: rgb(0, 160,220);
+                        background: rgb(0, 160, 220);
                     }
                     i {
-                        line-height: 44px;
-                        font-size: 24px;
+                        @include font(24px, 44px);
                         color: #80858a;
                         &.highlight {
                             color: #fff;
                         }
                     }
                 }
-               
             }
-             .price{
+            .price {
                 display: inline-block;
                 vertical-align: top;
                 margin-top: 12px;
-                line-height: 24px;
                 padding-right: 12px;
-                box-sizing: border-box;
                 border-right: 1px solid rgba(255, 255, 255, 0.1);
-                font-size: 16px;
+                @include font(16px, 24px);
                 font-weight: 700;
                 color: rgba(255, 255, 255, 0.4);
-                &.highlight{
+                &.highlight {
                     color: #fff;
                 }
             }
             .desc {
                 display: inline-block;
-                vertical-align: top;
-                line-height: 24px;
                 margin-left: 12px;
                 margin-top: 12px;
+                @include font(12px, 24px);
+                vertical-align: top;
                 color: rgba(255, 255, 255, 0.4);
-                font-size: 10px;
             }
         }
         .content-right {
-            flex: 0 0 105px;
             width: 105px;
             .pay {
                 height: 48px;
-                line-height: 48px;
+                @include font(12px, 48px);
                 text-align: center;
-                font-size: 12px;
-                color: rgba(255, 255, 255, 0.4);
                 font-weight: 700;
+                color: rgba(255, 255, 255, 0.4);
                 background: #2b333b;
                 &.not-enough {
                     background: #2b333b;
                 }
                 &.enough {
                     background: #00b43c;
-                    color:#fff;
+                    color: #fff;
                 }
             }
         }
@@ -264,14 +251,16 @@ export default {
         z-index: -1;
         width: 100%;
         transform: translateY(-100%);
-        &.fade-enter-active, &.fade-leave-active{
+        &.fade-enter-active,
+        &.fade-leave-active {
             transition: all 0.5s;
             transform: translateY(-100%);
         }
-        &.fade-enter, &.fade-leave-active {
-            transform: translateY(0)
+        &.fade-enter,
+        &.fade-leave-active {
+            transform: translateY(0);
         }
-        .list-header{
+        .list-header {
             height: 40px;
             line-height: 40px;
             padding: 0 18px;
@@ -288,16 +277,16 @@ export default {
                 color: rgb(0, 160, 220);
             }
         }
-        .list-content{
+        .list-content {
             padding: 0 18px;
             max-height: 217px;
             overflow: auto;
             background: #fff;
             .shopcart-food {
+                position: relative;
                 padding: 12px 0;
                 box-sizing: border-box;
                 border-bottom: 1px solid rgba(7, 17, 27, 0.1);
-                position: relative;
                 .name {
                     float: left;
                     font-size: 14px;
@@ -309,8 +298,7 @@ export default {
                     position: absolute;
                     right: 90px;
                     bottom: 12px;
-                    line-height: 36px;
-                    font-size: 14px;
+                    @include font(14px, 36px);
                     font-weight: 700;
                     color: rgb(240, 20, 20);
                 }
@@ -322,18 +310,16 @@ export default {
                         bottom: 3px;
                         width: 100px;
                     }
-                    
                 }
             }
         }
     }
 }
-.ball-container { 
+.ball-container {
     .ball {
         position: fixed;
         z-index: 200;
-        
-        //transition: all 0.6s cubic-bezier(0.49, -0.29, 0.75, 0.41)
+
         .inner {
             width: 16px;
             height: 16px;

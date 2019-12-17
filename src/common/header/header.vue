@@ -2,7 +2,7 @@
     <header class="head">
         <slot name="logo"></slot>
         <slot name="search"></slot>
-        <section  v-if="goBack" @click="$router.go(-1)" >
+        <section v-if="goBack" @click="$router.go(-1)">
             <span class="fa fa-angle-left"></span>
         </section>
         <section v-if="headTitle" class="head_title">
@@ -15,36 +15,30 @@
         </router-link>
         <slot name="changecity"></slot>
         <slot name="edit"></slot>
- 
     </header>
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState } from "vuex";
 export default {
-    props: ['goBack', 'headTitle', 'signinUp'],
+    props: ["goBack", "headTitle", "signinUp"],
     computed: {
-        ...mapState(
-            ['userInfo']
-        )
-    },
-}
+        ...mapState(["userInfo"])
+    }
+};
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/style/mixin';
+@import "@/assets/style/mixin";
 .head {
-    width: 100%;
-    height: 45px;
-    background-color: #3190E8;
-    font-size: 20px;
-    line-height: 45px;
-    color: #fff;
-    padding: 0 10px;
+    @include fj;
+    @include wh(100%, 50px);
+    @include font(20px, 50px);
     position: fixed;
     z-index: 99;
-    display: flex;
-    justify-content: space-between;
+    padding: 0 10px;
+    color: #fff;
+    background-color: #3190e8;
     .head_title {
         position: absolute;
         width: 50%;
@@ -58,5 +52,5 @@ export default {
             width: 200px;
         }
     }
-}  
+}
 </style>

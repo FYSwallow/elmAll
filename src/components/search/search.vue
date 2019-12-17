@@ -56,10 +56,8 @@ export default {
     },
     created() {
         this.geohash = this.$route.params.geohash
-        console.log(this.geohash)
         if(getStore('searchHistory')){
             this.searchHistory = JSON.parse(getStore('searchHistory'))
-            console.log(this.searchHistory)
         }
     },
     methods: {
@@ -72,7 +70,6 @@ export default {
             }
             this.showHistory = false
             const res = await searchRestaurant(this.geohash, this.searchValue)
-            console.log(res.data)
             this.restaurantList = res.data
             this.emptySearch = !this.restaurantList.length
             // 判断本地存储中是否已经存在这一项,如果存在,则不操作,如果不存在,则添加
