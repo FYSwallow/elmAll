@@ -195,7 +195,8 @@ export default {
                         background: rgb(0, 160, 220);
                     }
                     i {
-                        @include font(24px, 44px);
+                        font-size: 25px;
+                        line-height: 44px;
                         color: #80858a;
                         &.highlight {
                             color: #fff;
